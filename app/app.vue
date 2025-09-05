@@ -1,25 +1,28 @@
 <template>
-  <div class="container">
-    <button class="theme-toggle" @click="toggleTheme">
-      {{ theme === 'light' ? '🌙' : '☀️' }}
-    </button>
-    <h1>Hello World</h1>
+  <div>
+    <NuxtPage />
   </div>
 </template>
 
 <script setup>
-const { theme, toggleTheme, initTheme } = useTheme()
+const { initTheme } = useTheme()
+const { initAuth, isLoggedIn } = useAuth()
+const router = useRouter()
 
 onMounted(() => {
   initTheme()
+  initAuth()
+  
+  // Redirect to appropriate page based on auth status
+  if (process.client) {
+    const currentPath = router.currentRoute.value.path
+    if (currentPath === '/') {
+      if (isLoggedIn.value) {
+        router.push('/dashboard')
+      } else {
+        router.push('/login')
+      }
+    }
+  }
 })
 </script>
-
-<style scoped>
-.container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-</style>
