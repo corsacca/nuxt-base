@@ -5,9 +5,9 @@
     </button>
     
     <div class="login-card">
-      <h1>Login</h1>
+      <h1>{{ isRegistering ? 'Register' : 'Login' }}</h1>
       
-      <form @submit.prevent="handleLogin" class="login-form">
+      <form @submit.prevent="handleSubmit" class="login-form">
         <div class="form-group">
           <label for="email">Email:</label>
           <input 
@@ -26,12 +26,17 @@
             id="password" 
             v-model="password" 
             required 
-            placeholder="Enter your password"
+            :placeholder="isRegistering ? 'Create a password (min 6 chars)' : 'Enter your password'"
+            :minlength="isRegistering ? 6 : undefined"
           />
         </div>
         
         <button type="submit" :disabled="isLoading" class="login-button">
-          {{ isLoading ? 'Logging in...' : 'Login' }}
+          {{ isLoading ? (isRegistering ? 'Creating account...' : 'Logging in...') : (isRegistering ? 'Register' : 'Login') }}
+        </button>
+        
+        <button type="button" @click="toggleMode" class="toggle-button">
+          {{ isRegistering ? 'Already have an account? Login' : 'Need an account? Register' }}
         </button>
         
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
@@ -42,27 +47,35 @@
 
 <script setup>
 const { theme, toggleTheme, initTheme } = useTheme()
-const { login, isLoggedIn } = useAuth()
+const { login, register, isLoggedIn } = useAuth()
 const router = useRouter()
 
 const email = ref('')
 const password = ref('')
 const isLoading = ref(false)
 const errorMessage = ref('')
+const isRegistering = ref(false)
 
-const handleLogin = async () => {
+const handleSubmit = async () => {
   isLoading.value = true
   errorMessage.value = ''
   
-  const result = login(email.value, password.value)
+  const result = isRegistering.value 
+    ? await register(email.value, password.value)
+    : await login(email.value, password.value)
   
   if (result.success) {
     await router.push('/dashboard')
   } else {
-    errorMessage.value = result.error || 'Login failed'
+    errorMessage.value = result.error || `${isRegistering.value ? 'Registration' : 'Login'} failed`
   }
   
   isLoading.value = false
+}
+
+const toggleMode = () => {
+  isRegistering.value = !isRegistering.value
+  errorMessage.value = ''
 }
 
 // Redirect if already logged in (with a delay to avoid race conditions)  
@@ -168,6 +181,21 @@ onMounted(() => {
 .login-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  margin-top: 1rem;
+  padding: 0;
+}
+
+.toggle-button:hover {
+  color: var(--text);
 }
 
 .error-message {

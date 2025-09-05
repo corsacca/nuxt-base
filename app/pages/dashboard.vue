@@ -4,7 +4,7 @@
       <div class="header-content">
         <h1>Dashboard</h1>
         <div class="header-actions">
-          <span class="user-info">Welcome, {{ user?.email }}</span>
+          <span class="user-info">Welcome, {{ user?.display_name || user?.email }}</span>
           <button class="theme-toggle" @click="toggleTheme">
             {{ theme === 'light' ? '🌙' : '☀️' }}
           </button>
@@ -24,8 +24,10 @@
         
         <div class="dashboard-card">
           <h3>Account Info</h3>
+          <p><strong>Name:</strong> {{ user?.display_name || 'Not set' }}</p>
           <p><strong>Email:</strong> {{ user?.email }}</p>
-          <p><strong>Status:</strong> Active</p>
+          <p><strong>Status:</strong> {{ user?.verified ? 'Verified' : 'Unverified' }}</p>
+          <p v-if="user?.superadmin"><strong>Role:</strong> Super Admin</p>
         </div>
         
         <div class="dashboard-card">
@@ -49,9 +51,9 @@ const { theme, toggleTheme, initTheme } = useTheme()
 const { logout, user, isLoggedIn } = useAuth()
 const router = useRouter()
 
-const handleLogout = () => {
-  logout()
-  router.push('/login')
+const handleLogout = async () => {
+  await logout()
+  await router.push('/login')
 }
 
 // Redirect if not logged in (with a delay to avoid race conditions)

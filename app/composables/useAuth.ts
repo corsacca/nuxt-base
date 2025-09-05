@@ -1,44 +1,81 @@
 // Global state for auth
 const isLoggedIn = ref(false)
-const user = ref<{ email: string } | null>(null)
+const user = ref<{ 
+  id: number; 
+  email: string; 
+  display_name?: string;
+  verified?: boolean;
+  superadmin?: boolean;
+} | null>(null)
 let initialized = false
 
 export const useAuth = () => {
-  const login = (email: string, password: string) => {
-    // Simple mock authentication - in real app, this would call an API
-    if (email && password) {
-      isLoggedIn.value = true
-      user.value = { email }
+  const login = async (email: string, password: string) => {
+    try {
+      const data = await $fetch<{ success: boolean; user: { id: number; email: string; display_name: string; verified: boolean; superadmin: boolean } }>('/api/auth/login', {
+        method: 'POST',
+        body: { email, password }
+      })
       
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('isLoggedIn', 'true')
-        localStorage.setItem('userEmail', email)
+      if (data.success) {
+        isLoggedIn.value = true
+        user.value = data.user
+        return { success: true }
       }
       
-      return { success: true }
+      return { success: false, error: 'Login failed' }
+    } catch (error: any) {
+      console.error('Login error:', error)
+      return { success: false, error: error.data?.message || 'Login failed' }
     }
-    
-    return { success: false, error: 'Invalid credentials' }
   }
 
-  const logout = () => {
+  const register = async (email: string, password: string, display_name?: string) => {
+    try {
+      const data = await $fetch<{ success: boolean; user: { id: number; email: string; display_name: string; verified: boolean; superadmin: boolean } }>('/api/auth/register', {
+        method: 'POST',
+        body: { email, password, display_name }
+      })
+      
+      if (data.success) {
+        isLoggedIn.value = true
+        user.value = data.user
+        return { success: true }
+      }
+      
+      return { success: false, error: 'Registration failed' }
+    } catch (error: any) {
+      console.error('Registration error:', error)
+      return { success: false, error: error.data?.message || 'Registration failed' }
+    }
+  }
+
+  const logout = async () => {
+    try {
+      await $fetch('/api/auth/logout', {
+        method: 'POST'
+      })
+    } catch (error) {
+      console.error('Logout error:', error)
+    }
+    
     isLoggedIn.value = false
     user.value = null
-    
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('isLoggedIn')
-      localStorage.removeItem('userEmail')
-    }
   }
 
-  const initAuth = () => {
-    if (!initialized && typeof window !== 'undefined') {
-      const savedLoginState = localStorage.getItem('isLoggedIn')
-      const savedEmail = localStorage.getItem('userEmail')
-      
-      if (savedLoginState === 'true' && savedEmail) {
-        isLoggedIn.value = true
-        user.value = { email: savedEmail }
+  const initAuth = async () => {
+    if (!initialized) {
+      try {
+        const data = await $fetch<{ user: { id: number; email: string; display_name: string } }>('/api/auth/me')
+        
+        if (data.user) {
+          isLoggedIn.value = true
+          user.value = data.user
+        }
+      } catch (error) {
+        // User is not authenticated
+        isLoggedIn.value = false
+        user.value = null
       }
       
       initialized = true
@@ -49,6 +86,7 @@ export const useAuth = () => {
     isLoggedIn: readonly(isLoggedIn),
     user: readonly(user),
     login,
+    register,
     logout,
     initAuth
   }
