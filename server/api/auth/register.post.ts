@@ -1,5 +1,5 @@
 import { userService } from '../../database/users'
-import { generateToken, setAuthCookie } from '../../utils/auth'
+import { sendVerificationEmail } from '../../utils/email'
 
 export default defineEventHandler(async (event) => {
   try {
@@ -31,25 +31,25 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // Create user
+    // Create user (starts as unverified)
     const user = await userService.createUser({ 
       email, 
       password,
       display_name: display_name || email.split('@')[0]
     })
 
-    // Generate secure JWT token
-    const token = generateToken({
-      userId: user.id,
-      email: user.email,
-      display_name: user.display_name
-    })
-
-    // Set secure HTTP-only cookie
-    setAuthCookie(event, token)
+    // Generate verification URL using the user's token_key
+    const config = useRuntimeConfig()
+    const verificationUrl = `${config.public.siteUrl}/api/auth/verify?token=${user.token_key}`
+    
+    // Send verification email (fire and forget - don't block registration)
+    sendVerificationEmail(user.email, user.display_name, verificationUrl)
+      .catch(error => console.error('Failed to send verification email:', error))
 
     return {
       success: true,
+      requiresVerification: true,
+      message: 'Registration successful! Please check your email to verify your account before logging in.',
       user: {
         id: user.id,
         email: user.email,

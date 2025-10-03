@@ -5,14 +5,20 @@
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
+    "dev:mail": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "mailhog:start": "echo 'ℹ Using shared MailHog from sale/nuxtui project at http://localhost:8025'",
+    "mailhog:stop": "echo 'ℹ MailHog is shared with sale/nuxtui project - use that project to stop it'",
+    "mailhog:logs": "docker logs nuxtui-mailhog",
+    "mailhog:open": "open http://localhost:8025"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.2.0",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^7.0.6",
     "nuxt": "^4.1.0",
     "uuid": "^12.0.0",
     "vue": "^3.5.20",
@@ -22,6 +28,7 @@
     "@types/bcrypt": "^6.0.0",
     "@types/better-sqlite3": "^7.6.13",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^7.0.1",
     "@types/uuid": "^10.0.0"
   }
 }

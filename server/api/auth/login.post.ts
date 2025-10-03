@@ -24,13 +24,13 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    // For now, allow unverified users (can be changed later for stricter security)
-    // if (!user.verified) {
-    //   throw createError({
-    //     statusCode: 403,
-    //     statusMessage: 'Please verify your email before logging in'
-    //   })
-    // }
+    // Enforce email verification
+    if (!user.verified) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Please verify your email before logging in. Check your inbox for the verification email.'
+      })
+    }
 
     // Generate secure JWT token
     const token = generateToken({

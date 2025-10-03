@@ -32,15 +32,30 @@ export const useAuth = () => {
 
   const register = async (email: string, password: string, display_name?: string) => {
     try {
-      const data = await $fetch<{ success: boolean; user: { id: number; email: string; display_name: string; verified: boolean; superadmin: boolean } }>('/api/auth/register', {
+      const data = await $fetch<{ 
+        success: boolean; 
+        requiresVerification?: boolean;
+        message?: string;
+        user: { id: number; email: string; display_name: string; verified: boolean; superadmin: boolean } 
+      }>('/api/auth/register', {
         method: 'POST',
         body: { email, password, display_name }
       })
       
       if (data.success) {
-        isLoggedIn.value = true
-        user.value = data.user
-        return { success: true }
+        if (data.requiresVerification) {
+          // Don't log in user yet - they need to verify email
+          return { 
+            success: true, 
+            requiresVerification: true,
+            message: data.message || 'Please check your email to verify your account.'
+          }
+        } else {
+          // Immediate login (if verification not required)
+          isLoggedIn.value = true
+          user.value = data.user
+          return { success: true }
+        }
       }
       
       return { success: false, error: 'Registration failed' }

@@ -9,6 +9,9 @@ dist
 # Database files
 data/
 
+# Docker
+docker-compose.override.yml
+
 # Node dependencies
 node_modules
 

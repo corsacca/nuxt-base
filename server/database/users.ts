@@ -72,6 +72,17 @@ export class UserService {
     return stmt.get(email) as User | null
   }
 
+  // Get user by token key (for email verification)
+  getUserByTokenKey(tokenKey: string): User | null {
+    const stmt = this.db.prepare(`
+      SELECT id, email, display_name, verified, superadmin, token_key, created_at, updated_at
+      FROM users
+      WHERE token_key = ?
+    `)
+    
+    return stmt.get(tokenKey) as User | null
+  }
+
   // Verify user password
   async verifyPassword(email: string, password: string): Promise<User | null> {
     const stmt = this.db.prepare(`
