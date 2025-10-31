@@ -1,297 +1,327 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: false
+})
+
+const router = useRouter()
+const route = useRoute()
+const { login } = useAuth()
+const { theme, toggleTheme, initTheme } = useTheme()
+
+// Initialize theme on mount
+onMounted(() => {
+  initTheme()
+})
+
+const state = reactive({
+  email: '',
+  password: ''
+})
+
+const loading = ref(false)
+const error = ref('')
+const successMessage = ref('')
+
+// Forgot password state
+const view = ref<'login' | 'reset'>('login')
+const resetEmail = ref('')
+const resetLoading = ref(false)
+const resetError = ref('')
+const resetSuccess = ref(false)
+const sentToEmail = ref('')
+
+// Check for verification status in query params
+onMounted(() => {
+  const verified = route.query.verified as string
+  if (verified === 'success') {
+    successMessage.value = 'Email verified successfully! You can now sign in.'
+  } else if (verified === 'already') {
+    successMessage.value = 'Your email is already verified. Please sign in.'
+  }
+})
+
+async function handleLogin() {
+  error.value = ''
+  loading.value = true
+
+  try {
+    const result = await login(state.email, state.password)
+
+    if (!result.success) {
+      error.value = result.message || 'Login failed. Please check your credentials.'
+    }
+    // On success, useAuth composable will handle navigation
+  } catch (err: any) {
+    error.value = err.data?.message || 'An error occurred during login. Please try again.'
+  } finally {
+    loading.value = false
+  }
+}
+
+const redirectToRegister = () => {
+  const redirect = route.query.redirect as string
+  if (redirect) {
+    router.push(`/register?redirect=${encodeURIComponent(redirect)}`)
+  } else {
+    router.push('/register')
+  }
+}
+
+async function handleForgotPassword() {
+  resetError.value = ''
+  resetLoading.value = true
+
+  try {
+    const response = await $fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      body: {
+        email: resetEmail.value
+      }
+    })
+
+    resetSuccess.value = true
+    sentToEmail.value = resetEmail.value
+    resetEmail.value = ''
+  } catch (err: any) {
+    resetError.value = err.data?.message || 'An error occurred. Please try again.'
+  } finally {
+    resetLoading.value = false
+  }
+}
+
+function switchToLogin() {
+  view.value = 'login'
+  resetSuccess.value = false
+  resetError.value = ''
+  sentToEmail.value = ''
+}
+
+function switchToReset() {
+  view.value = 'reset'
+  error.value = ''
+  successMessage.value = ''
+}
+</script>
+
 <template>
-  <div class="login-container">
-    <button class="theme-toggle" @click="toggleTheme">
-      {{ theme === 'light' ? '🌙' : '☀️' }}
-    </button>
-    
-    <div class="login-card">
-      <h1>{{ isRegistering ? 'Register' : 'Login' }}</h1>
-      
-      <!-- Email Verification Success Message -->
-      <div v-if="showVerificationMessage" class="verification-message">
-        <div class="success-icon">📧</div>
-        <h3>Check Your Email!</h3>
-        <p>{{ successMessage }}</p>
-        <p class="verification-note">
-          Click the verification link in your email to activate your account, then return here to log in.
-        </p>
-        <button type="button" @click="showVerificationMessage = false" class="close-message-button">
-          Got it
+  <div class="min-h-screen flex items-center justify-center bg-white px-4 py-12">
+    <div class="w-full max-w-md">
+      <!-- Theme Toggle -->
+      <div class="flex justify-end mb-4">
+        <button class="theme-toggle-btn" @click="toggleTheme" title="Toggle theme">
+          {{ theme === 'light' ? '🌙' : '☀️' }}
         </button>
       </div>
-      
-      <!-- Login/Register Form -->
-      <form v-else @submit.prevent="handleSubmit" class="login-form">
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input 
-            type="email" 
-            id="email" 
-            v-model="email" 
-            required 
-            placeholder="Enter your email"
+
+      <!-- Logo/Header -->
+      <div class="text-center mb-8">
+        <h1 class="text-4xl font-bold text-black mb-2">
+          {{ view === 'login' ? 'Welcome Back' : 'Reset Password' }}
+        </h1>
+        <p class="text-gray-600">
+          {{ view === 'login' ? 'Sign in to your account' : 'Enter your email to receive reset instructions' }}
+        </p>
+      </div>
+
+      <!-- Login View -->
+      <UCard v-if="view === 'login'" class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+        <form @submit.prevent="handleLogin" class="space-y-6">
+          <!-- Success Alert -->
+          <UAlert
+            v-if="successMessage"
+            color="green"
+            variant="soft"
+            :title="successMessage"
+            @close="successMessage = ''"
+            :close-button="{ icon: 'i-lucide-x', color: 'gray', variant: 'ghost' }"
           />
-        </div>
-        
-        <div class="form-group">
-          <label for="password">Password:</label>
-          <input 
-            type="password" 
-            id="password" 
-            v-model="password" 
-            required 
-            :placeholder="isRegistering ? 'Create a password (min 6 chars)' : 'Enter your password'"
-            :minlength="isRegistering ? 6 : undefined"
+
+          <!-- Error Alert -->
+          <UAlert
+            v-if="error"
+            color="red"
+            variant="soft"
+            :title="error"
+            @close="error = ''"
+            :close-button="{ icon: 'i-lucide-x', color: 'gray', variant: 'ghost' }"
           />
-        </div>
-        
-        <button type="submit" :disabled="isLoading" class="login-button">
-          {{ isLoading ? (isRegistering ? 'Creating account...' : 'Logging in...') : (isRegistering ? 'Register' : 'Login') }}
-        </button>
-        
-        <button type="button" @click="toggleMode" class="toggle-button">
-          {{ isRegistering ? 'Already have an account? Login' : 'Need an account? Register' }}
-        </button>
-        
-        <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-        <p v-if="successMessage && !showVerificationMessage" class="success-message">{{ successMessage }}</p>
-      </form>
+
+          <!-- Email Input -->
+          <div class="space-y-2">
+            <UFormField label="Email" name="email" required>
+              <UInput
+                v-model="state.email"
+                type="email"
+                placeholder="you@example.com"
+                size="lg"
+                :disabled="loading"
+                autocomplete="email"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+
+          <!-- Password Input -->
+          <div class="space-y-2">
+            <UFormField label="Password" name="password" required>
+              <UInput
+                v-model="state.password"
+                type="password"
+                placeholder="Enter your password"
+                size="lg"
+                :disabled="loading"
+                autocomplete="current-password"
+                class="w-full"
+              />
+            </UFormField>
+          </div>
+
+          <!-- Forgot Password Link -->
+          <div class="text-right">
+            <button
+              type="button"
+              @click="switchToReset"
+              class="text-sm text-gray-600 hover:text-black transition-colors"
+              :disabled="loading"
+            >
+              Forgot Password?
+            </button>
+          </div>
+
+          <!-- Submit Button -->
+          <UButton
+            type="submit"
+            color="primary"
+            size="lg"
+            block
+            :loading="loading"
+            :disabled="loading || !state.email || !state.password"
+          >
+            Sign In
+          </UButton>
+
+          <!-- Divider -->
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-white text-gray-500">Don't have an account?</span>
+            </div>
+          </div>
+
+          <!-- Register Link -->
+          <UButton
+            color="neutral"
+            variant="outline"
+            size="lg"
+            block
+            @click="redirectToRegister"
+            :disabled="loading"
+          >
+            Create Account
+          </UButton>
+        </form>
+      </UCard>
+
+      <!-- Forgot Password View -->
+      <UCard v-else class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+        <form @submit.prevent="handleForgotPassword" class="space-y-6">
+          <!-- Success Message -->
+          <div v-if="resetSuccess" class="space-y-4">
+            <UAlert
+              color="green"
+              variant="soft"
+              title="Email Sent!"
+              :close-button="{ icon: 'i-lucide-x', color: 'gray', variant: 'ghost' }"
+              @close="resetSuccess = false"
+            />
+            <p class="text-gray-600">
+              If an account with <strong>{{ sentToEmail }}</strong> exists, you will receive password reset instructions shortly.
+            </p>
+            <p class="text-sm text-gray-500">
+              Check your email inbox and spam folder.
+            </p>
+          </div>
+
+          <!-- Reset Form -->
+          <div v-else class="space-y-6">
+            <!-- Error Alert -->
+            <UAlert
+              v-if="resetError"
+              color="red"
+              variant="soft"
+              :title="resetError"
+              @close="resetError = ''"
+              :close-button="{ icon: 'i-lucide-x', color: 'gray', variant: 'ghost' }"
+            />
+
+            <!-- Email Input -->
+            <div class="space-y-2">
+              <UFormField label="Email" name="email" required>
+                <UInput
+                  v-model="resetEmail"
+                  type="email"
+                  placeholder="you@example.com"
+                  size="lg"
+                  :disabled="resetLoading"
+                  autocomplete="email"
+                  class="w-full"
+                />
+              </UFormField>
+            </div>
+
+            <!-- Submit Button -->
+            <UButton
+              type="submit"
+              color="primary"
+              size="lg"
+              block
+              :loading="resetLoading"
+              :disabled="resetLoading || !resetEmail"
+            >
+              Send Reset Link
+            </UButton>
+          </div>
+
+          <!-- Back to Login -->
+          <div class="text-center">
+            <button
+              type="button"
+              @click="switchToLogin"
+              class="text-sm text-gray-600 hover:text-black transition-colors"
+              :disabled="resetLoading"
+            >
+              ← Back to Login
+            </button>
+          </div>
+        </form>
+      </UCard>
+
+      <!-- Footer -->
+      <p class="text-center text-sm text-gray-500 mt-8">
+        By signing in, you agree to our Terms of Service and Privacy Policy
+      </p>
     </div>
   </div>
 </template>
 
-<script setup>
-const { theme, toggleTheme, initTheme } = useTheme()
-const { login, register, isLoggedIn } = useAuth()
-const router = useRouter()
-
-const email = ref('')
-const password = ref('')
-const isLoading = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
-const isRegistering = ref(false)
-const showVerificationMessage = ref(false)
-
-const handleSubmit = async () => {
-  isLoading.value = true
-  errorMessage.value = ''
-  successMessage.value = ''
-  
-  const result = isRegistering.value 
-    ? await register(email.value, password.value)
-    : await login(email.value, password.value)
-  
-  if (result.success) {
-    if (result.requiresVerification) {
-      // Show verification message instead of redirecting
-      showVerificationMessage.value = true
-      successMessage.value = result.message || 'Please check your email to verify your account.'
-    } else {
-      await router.push('/dashboard')
-    }
-  } else {
-    errorMessage.value = result.error || `${isRegistering.value ? 'Registration' : 'Login'} failed`
-  }
-  
-  isLoading.value = false
-}
-
-const toggleMode = () => {
-  isRegistering.value = !isRegistering.value
-  errorMessage.value = ''
-  successMessage.value = ''
-  showVerificationMessage.value = false
-}
-
-// Redirect if already logged in (with a delay to avoid race conditions)  
-watchEffect(() => {
-  if (isLoggedIn.value) {
-    nextTick(() => {
-      router.push('/dashboard')
-    })
-  }
-})
-
-onMounted(() => {
-  initTheme()
-  
-  // Handle URL parameters for verification status
-  const route = useRoute()
-  
-  if (route.query.verified === 'true') {
-    successMessage.value = '✅ Email verified successfully! You can now log in.'
-  } else if (route.query.error === 'invalid_token') {
-    errorMessage.value = 'Invalid or expired verification link. Please register again.'
-  } else if (route.query.error === 'verification_failed') {
-    errorMessage.value = 'Email verification failed. Please try again or register again.'
-  } else if (route.query.info === 'already_verified') {
-    successMessage.value = 'Email already verified! You can log in.'
-  }
-})
-</script>
-
 <style scoped>
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-  position: relative;
-}
-
-.theme-toggle {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  color: var(--text);
+.theme-toggle-btn {
+  background: var(--ui-bg-elevated);
+  border: 1px solid var(--ui-border);
+  color: var(--ui-text);
   padding: 0.5rem;
   border-radius: 0.25rem;
   cursor: pointer;
   font-size: 1.2rem;
-}
-
-.login-card {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 2rem;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.login-card h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: var(--text);
-}
-
-.login-form {
+  transition: background 0.2s;
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  align-items: center;
+  justify-content: center;
 }
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.form-group label {
-  font-weight: 500;
-  color: var(--text);
-}
-
-.form-group input {
-  padding: 0.75rem;
-  border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 1rem;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: var(--text);
-}
-
-.login-button {
-  padding: 0.75rem;
-  background: var(--text);
-  color: var(--bg);
-  border: none;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  margin-top: 0.5rem;
-}
-
-.login-button:hover:not(:disabled) {
-  background: var(--text-muted);
-}
-
-.login-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.toggle-button {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  cursor: pointer;
-  font-size: 0.9rem;
-  text-decoration: underline;
-  margin-top: 1rem;
-  padding: 0;
-}
-
-.toggle-button:hover {
-  color: var(--text);
-}
-
-.error-message {
-  color: var(--text);
-  text-align: center;
-  margin-top: 0.5rem;
-  font-weight: 500;
-}
-
-.success-message {
-  color: var(--text);
-  text-align: center;
-  margin-top: 0.5rem;
-  font-weight: 500;
-}
-
-.verification-message {
-  text-align: center;
-  padding: 2rem 1rem;
-}
-
-.success-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.verification-message h3 {
-  margin: 0 0 1rem 0;
-  color: var(--text);
-  font-size: 1.5rem;
-}
-
-.verification-message p {
-  margin: 0.5rem 0;
-  color: var(--text);
-  line-height: 1.5;
-}
-
-.verification-note {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 1.5rem 0 2rem 0 !important;
-}
-
-.close-message-button {
-  background: var(--text);
-  color: var(--bg);
-  border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  margin-top: 1rem;
-}
-
-.close-message-button:hover {
-  background: var(--text-muted);
+.theme-toggle-btn:hover {
+  background: var(--ui-border);
 }
 </style>

@@ -1,108 +1,86 @@
-// Global state for auth
-const isLoggedIn = ref(false)
-const user = ref<{ 
-  id: number; 
-  email: string; 
-  display_name?: string;
-  verified?: boolean;
-  superadmin?: boolean;
-} | null>(null)
-let initialized = false
-
 export const useAuth = () => {
+  const user = useState('auth.user', () => null as any)
+  
   const login = async (email: string, password: string) => {
     try {
-      const data = await $fetch<{ success: boolean; user: { id: number; email: string; display_name: string; verified: boolean; superadmin: boolean } }>('/api/auth/login', {
+      const response = await $fetch('/api/auth/login', {
         method: 'POST',
         body: { email, password }
-      })
+      }) as { success: boolean; user?: any }
       
-      if (data.success) {
-        isLoggedIn.value = true
-        user.value = data.user
+      if (response.success) {
+        user.value = response.user
+        
+        // Check for redirect parameter in URL
+        const route = useRoute()
+        const redirectTo = route.query.redirect as string
+        
+        if (redirectTo && redirectTo.startsWith('/')) {
+          // Only allow internal redirects (starting with /)
+          await navigateTo(redirectTo)
+        } else {
+          await navigateTo('/')
+        }
+        
         return { success: true }
       }
       
-      return { success: false, error: 'Login failed' }
+      return { success: false, message: 'Login failed' }
     } catch (error: any) {
-      console.error('Login error:', error)
-      return { success: false, error: error.data?.message || 'Login failed' }
-    }
-  }
-
-  const register = async (email: string, password: string, display_name?: string) => {
-    try {
-      const data = await $fetch<{ 
-        success: boolean; 
-        requiresVerification?: boolean;
-        message?: string;
-        user: { id: number; email: string; display_name: string; verified: boolean; superadmin: boolean } 
-      }>('/api/auth/register', {
-        method: 'POST',
-        body: { email, password, display_name }
-      })
-      
-      if (data.success) {
-        if (data.requiresVerification) {
-          // Don't log in user yet - they need to verify email
-          return { 
-            success: true, 
-            requiresVerification: true,
-            message: data.message || 'Please check your email to verify your account.'
-          }
-        } else {
-          // Immediate login (if verification not required)
-          isLoggedIn.value = true
-          user.value = data.user
-          return { success: true }
-        }
+      return { 
+        success: false, 
+        message: error.data?.message || 'An error occurred during login' 
       }
-      
-      return { success: false, error: 'Registration failed' }
-    } catch (error: any) {
-      console.error('Registration error:', error)
-      return { success: false, error: error.data?.message || 'Registration failed' }
     }
   }
-
+  
   const logout = async () => {
     try {
-      await $fetch('/api/auth/logout', {
-        method: 'POST'
-      })
-    } catch (error) {
-      console.error('Logout error:', error)
+      await $fetch('/api/auth/logout', { method: 'POST' })
+      user.value = null
+      await navigateTo('/login')
+    } catch {
+      // Even if the server request fails, clear local state
+      user.value = null
+      await navigateTo('/login')
     }
-    
-    isLoggedIn.value = false
-    user.value = null
+  }
+  
+  const register = async (email: string, password: string, display_name: string) => {
+    try {
+      const response = await $fetch('/api/auth/register', {
+        method: 'POST',
+        body: { email, password, display_name }
+      }) as { success: boolean; message?: string; requiresVerification?: boolean }
+      
+      return response
+    } catch (error: any) {
+      return { 
+        success: false, 
+        message: error.data?.message || 'Registration failed' 
+      }
+    }
+  }
+  
+  const checkAuth = async () => {
+    try {
+      const response = await $fetch('/api/auth/me') as { user: any }
+      user.value = response.user
+      return response.user
+    } catch {
+      user.value = null
+      return null
+    }
   }
 
-  const initAuth = async () => {
-    if (!initialized) {
-      try {
-        const data = await $fetch<{ user: { id: number; email: string; display_name: string } }>('/api/auth/me')
-        
-        if (data.user) {
-          isLoggedIn.value = true
-          user.value = data.user
-        }
-      } catch (error) {
-        // User is not authenticated
-        isLoggedIn.value = false
-        user.value = null
-      }
-      
-      initialized = true
-    }
-  }
+  const isLoggedIn = computed(() => !!user.value)
 
   return {
-    isLoggedIn: readonly(isLoggedIn),
     user: readonly(user),
     login,
-    register,
     logout,
-    initAuth
+    register,
+    checkAuth,
+    isLoggedIn
   }
-}
+} 
