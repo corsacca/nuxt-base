@@ -162,6 +162,7 @@ h1, h2, h3, h4, h5, h6, p, span, div {
 [data-theme="dark"] div[class*="rounded"][class*="shadow"],
 [data-theme="dark"] div[class*="rounded"][class*="border"] {
   background-color: #1a1a1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 /* Nuxt UI Input theming */
@@ -183,6 +184,18 @@ button:not([class*="outline"]):not([class*="ghost"]) {
 
 button:not([class*="outline"]):not([class*="ghost"]):hover:not(:disabled) {
   background-color: rgba(0, 0, 0, 0.85) !important;
+}
+
+/* Dark theme - add white borders to buttons so they're visible on black background */
+[data-theme="dark"] button:not([class*="outline"]):not([class*="ghost"]) {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+[data-theme="dark"] button:not([class*="outline"]):not([class*="ghost"]):hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.5) !important;
 }
 
 /* Link hover states - only for text links */
