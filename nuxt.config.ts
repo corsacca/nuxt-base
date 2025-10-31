@@ -8,6 +8,24 @@ export default defineNuxtConfig({
   ssr: false,
   css: ['~/assets/css/main.css'],
 
+
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }
+      ]
+    }
+  },
+
+  nitro: {
+    preset: 'vercel',
+    vercel: {
+      regions: ['fra1'] // Frankfurt - matches Neon eu-central-1
+    }
+  },
+
   colorMode: {
     preference: 'light',
     classSuffix: ''
