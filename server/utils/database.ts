@@ -63,6 +63,7 @@ export async function tableExists(tableName: string): Promise<boolean> {
 }
 
 // Helper function to initialize database schema
+// Schema is now managed through migrations - this is kept for backward compatibility
 export async function initDatabase() {
   const connection = initConnection()
   if (!connection) {
@@ -70,15 +71,21 @@ export async function initDatabase() {
     return
   }
 
-  // Database schema is now handled by migrations
-  // This function just ensures the connection is ready
-  console.log('Database connection ready')
+  // All schema creation is now handled by migrations
+  console.log('Database schema managed by migrations')
 }
 
 // Initialize database on first use in a lazy manner
 let initialized = false
 
 export async function ensureInitialized() {
+  // Skip initialization in production if SKIP_INIT is set
+  // Set this env var in Vercel after first successful deployment
+  const config = useRuntimeConfig()
+  if (config.public.nodeEnv === 'production' && process.env.SKIP_INIT === 'true') {
+    return
+  }
+
   const connection = initConnection()
   if (!connection) {
     throw new Error('Database not configured')
