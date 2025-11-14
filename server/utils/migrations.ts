@@ -3,6 +3,12 @@ import { readdir } from 'fs/promises'
 import { join } from 'path'
 import type { Migration } from './migration-interface'
 
+type MigrationSource = 'base' | 'project'
+
+interface NamespacedMigration extends Migration {
+  source: MigrationSource
+}
+
 export class MigrationRunner {
   private sql: Sql
 
@@ -14,23 +20,24 @@ export class MigrationRunner {
     // Create migrations table if it doesn't exist
     await this.sql`
       CREATE TABLE IF NOT EXISTS migrations (
-        id INTEGER PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
+        migration_id INTEGER NOT NULL,
+        source TEXT NOT NULL,
         name TEXT NOT NULL,
-        executed_at TIMESTAMPTZ DEFAULT NOW()
+        executed_at TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(source, migration_id)
       )
     `
   }
 
-  private async loadMigrations(): Promise<Migration[]> {
-    const migrationsDir = join(process.cwd(), 'migrations')
-
+  private async loadMigrationsFromDir(dir: string, source: MigrationSource): Promise<NamespacedMigration[]> {
     try {
-      const files = await readdir(migrationsDir)
+      const files = await readdir(dir)
       const migrationFiles = files
         .filter(file => file.endsWith('.ts') || file.endsWith('.js'))
         .sort() // Sort alphabetically to ensure order
 
-      const migrations: Migration[] = []
+      const migrations: NamespacedMigration[] = []
 
       for (const file of migrationFiles) {
         // Extract migration number from filename (e.g., "001_initial.ts" -> 1)
@@ -41,7 +48,7 @@ export class MigrationRunner {
         }
 
         const id = parseInt(match[1]!, 10)
-        const filePath = join(migrationsDir, file)
+        const filePath = join(dir, file)
 
         try {
           // Dynamically import the migration module
@@ -63,7 +70,10 @@ export class MigrationRunner {
             continue
           }
 
-          migrations.push(migrationInstance)
+          // Add source property to the migration instance
+          const namespacedMigration = migrationInstance as NamespacedMigration
+          namespacedMigration.source = source
+          migrations.push(namespacedMigration)
         }
         catch (error) {
           console.error(`Failed to load migration ${file}:`, error)
@@ -74,31 +84,119 @@ export class MigrationRunner {
       return migrations.sort((a, b) => a.id - b.id)
     }
     catch {
-      console.warn('Migrations directory not found or empty, skipping migrations')
+      console.log(`📝 No ${source} migrations directory found`)
       return []
     }
   }
 
-  private async getExecutedMigrations(): Promise<number[]> {
-    const rows = await this.sql`SELECT id FROM migrations ORDER BY id`
-    return rows.map(row => row.id as number)
+  private async loadMigrations(): Promise<NamespacedMigration[]> {
+    // Load base layer migrations
+    // Strategy: Find the base layer by looking for common layer locations
+    const cwdDir = process.cwd()
+    const possibleBaseDirs = [
+      // Local base layer (when testing with extends: ['../../base'])
+      join(cwdDir, '../../base/migrations'),
+      join(cwdDir, '../base/migrations'),
+      // Remote GitHub layer cached by c12
+      join(cwdDir, 'node_modules/.c12'),
+    ]
+
+    let baseLayerDir: string | null = null
+    let baseMigrations: NamespacedMigration[] = []
+
+    // Try local base layer first
+    for (const possibleDir of possibleBaseDirs.slice(0, 2)) {
+      console.log('🔍 Checking for base migrations in:', possibleDir)
+      const migrations = await this.loadMigrationsFromDir(possibleDir, 'base')
+      if (migrations.length > 0) {
+        baseLayerDir = possibleDir
+        baseMigrations = migrations
+        console.log(`✅ Loaded ${baseMigrations.length} base migration(s) from ${baseLayerDir}`)
+        break
+      }
+    }
+
+    // If not found in local, try c12 cache
+    if (baseMigrations.length === 0) {
+      const c12Dir = possibleBaseDirs[2]
+      try {
+        const c12Entries = await readdir(c12Dir)
+        for (const entry of c12Entries) {
+          if (entry.startsWith('github_corsacca_nuxt')) {
+            const layerMigrationsDir = join(c12Dir, entry, 'migrations')
+            console.log('🔍 Checking for base migrations in c12 cache:', layerMigrationsDir)
+            const migrations = await this.loadMigrationsFromDir(layerMigrationsDir, 'base')
+            if (migrations.length > 0) {
+              baseLayerDir = layerMigrationsDir
+              baseMigrations = migrations
+              console.log(`✅ Loaded ${baseMigrations.length} base migration(s) from ${baseLayerDir}`)
+              break
+            }
+          }
+        }
+      } catch {
+        console.log('📝 No c12 cache found')
+      }
+    }
+
+    if (baseMigrations.length === 0) {
+      console.log('⚠️  No base layer migrations found')
+    }
+
+    // Load project migrations (from the consuming project's migrations directory)
+    const projectDir = join(cwdDir, 'migrations')
+    console.log('🔍 Looking for project migrations in:', projectDir)
+    const projectMigrations = await this.loadMigrationsFromDir(projectDir, 'project')
+    console.log(`✅ Loaded ${projectMigrations.length} project migration(s)`)
+
+    // Combine: base migrations first (sorted by ID), then project migrations (sorted by ID)
+    // This ensures base:001, base:002, base:003, project:001, project:002
+    return [...baseMigrations, ...projectMigrations]
   }
 
-  private async executeMigration(migration: Migration) {
-    console.log(`Executing migration ${migration.id}: ${migration.name}`)
+  private async getExecutedMigrations(): Promise<Set<string>> {
+    const rows = await this.sql`SELECT source, migration_id FROM migrations ORDER BY id`
+    // Return set of "source:id" strings (e.g., "base:1", "project:2")
+    return new Set(rows.map(row => `${row.source}:${row.migration_id}`))
+  }
+
+  private async executeMigration(migration: NamespacedMigration) {
+    console.log(`Executing ${migration.source} migration ${migration.id}: ${migration.name}`)
 
     await this.sql.begin(async (sql) => {
+      // Create a hybrid adapter that supports both postgres API (tagged templates)
+      // and traditional pool.query() API for backwards compatibility
+      const adapter = Object.assign(
+        // Create a function that acts as the tagged template handler
+        function(...args: any[]) {
+          return (sql as any)(...args)
+        },
+        // Add all postgres sql methods/properties
+        sql,
+        // Add pool.query() method for legacy migrations
+        {
+          query: async (queryString: string, params?: any[]) => {
+            if (params && params.length > 0) {
+              let paramIndex = 1
+              const convertedQuery = queryString.replace(/\?/g, () => `$${paramIndex++}`)
+              return { rows: await sql.unsafe(convertedQuery, params) }
+            }
+            return { rows: await sql.unsafe(queryString) }
+          }
+        }
+      )
+
       // Execute the migration's up method
-      await migration.up(sql)
+      await migration.up(adapter as any)
 
       // Record that this migration was executed
       await sql`
-        INSERT INTO migrations (id, name)
-        VALUES (${migration.id}, ${migration.name})
+        INSERT INTO migrations (migration_id, source, name)
+        VALUES (${migration.id}, ${migration.source}, ${migration.name})
       `
     })
 
-    console.log(`✓ Migration ${migration.id} completed successfully`)
+    console.log(`✓ ${migration.source} migration ${migration.id} completed successfully`)
   }
 
   async runMigrations(): Promise<void> {
@@ -112,9 +210,9 @@ export class MigrationRunner {
       return
     }
 
-    const executedMigrationIds = await this.getExecutedMigrations()
+    const executedMigrationKeys = await this.getExecutedMigrations()
     const pendingMigrations = allMigrations.filter(
-      migration => !executedMigrationIds.includes(migration.id)
+      migration => !executedMigrationKeys.has(`${migration.source}:${migration.id}`)
     )
 
     if (pendingMigrations.length === 0) {
@@ -129,25 +227,26 @@ export class MigrationRunner {
         await this.executeMigration(migration)
       }
       catch (error) {
-        console.error(`❌ Migration ${migration.id} failed:`, error)
-        throw new Error(`Migration ${migration.id} failed: ${error}`)
+        console.error(`❌ ${migration.source} migration ${migration.id} failed:`, error)
+        throw new Error(`${migration.source} migration ${migration.id} failed: ${error}`)
       }
     }
 
     console.log('🎉 All migrations completed successfully')
   }
 
-  async getMigrationStatus(): Promise<{ executed: number[], pending: number[], total: number }> {
+  async getMigrationStatus(): Promise<{ executed: string[], pending: string[], total: number }> {
     await this.initializeMigrationsTable()
     const allMigrations = await this.loadMigrations()
-    const executedMigrationIds = await this.getExecutedMigrations()
-    const pendingMigrationIds = allMigrations
-      .filter(m => !executedMigrationIds.includes(m.id))
-      .map(m => m.id)
+    const executedMigrationKeys = await this.getExecutedMigrations()
+    const executed = Array.from(executedMigrationKeys)
+    const pending = allMigrations
+      .filter(m => !executedMigrationKeys.has(`${m.source}:${m.id}`))
+      .map(m => `${m.source}:${m.id}`)
 
     return {
-      executed: executedMigrationIds,
-      pending: pendingMigrationIds,
+      executed,
+      pending,
       total: allMigrations.length,
     }
   }
