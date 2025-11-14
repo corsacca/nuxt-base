@@ -15,8 +15,7 @@ export default defineNuxtConfig({
   // Default to SPA mode (can be overridden by consuming projects)
   ssr: false,
 
-  // Layer styles
-  css: ['~/assets/css/main.css'],
+  // Layer styles are imported in app.vue
 
   // Default app head configuration
   app: {

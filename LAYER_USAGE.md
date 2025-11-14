@@ -110,10 +110,13 @@ export const useMyFeature = () => {
 
 ### Customize Styles
 
-You can:
-1. Override CSS variables in your own CSS file
-2. Add your own global CSS in `nuxt.config.ts`
+The layer provides all theme styles automatically - no CSS file needed in your project!
+
+To customize:
+1. Override CSS variables in your own CSS file (create `app/assets/css/custom.css`)
+2. Add your own global CSS in `nuxt.config.ts`: `css: ['~/assets/css/custom.css']`
 3. Use Tailwind classes to customize components
+4. Override the layer's theme variables (`--ui-bg`, `--ui-text`, etc.) to match your brand
 
 ## Using Layer Features
 
