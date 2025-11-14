@@ -1,6 +1,6 @@
 {
-  "name": "@yourorg/nuxt-base-layer",
-  "version": "1.0.0",
+  "name": "@corsacca/nuxt-base-layer",
+  "version": "1.0.1",
   "description": "Base Nuxt layer with authentication, theme system, and common utilities",
   "type": "module",
   "private": true,

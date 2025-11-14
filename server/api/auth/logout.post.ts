@@ -1,6 +1,3 @@
-import { getAuthUser } from '#server/utils/auth'
-import { logLogout } from '#server/utils/activity-logger'
-
 export default defineEventHandler(async (event) => {
   // Get user info before clearing cookie
   const user = getAuthUser(event)

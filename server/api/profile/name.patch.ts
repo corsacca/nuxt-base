@@ -1,7 +1,3 @@
-import sql, { ensureInitialized } from '#server/utils/database'
-import { logEvent } from '#server/utils/activity-logger'
-import { requireAuth } from '#server/utils/auth'
-
 export default defineEventHandler(async (event) => {
   await ensureInitialized()
 

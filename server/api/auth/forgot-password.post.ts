@@ -1,6 +1,4 @@
 import crypto from 'crypto'
-import sql, { ensureInitialized } from '#server/utils/database'
-import { sendTemplateEmail } from '#server/utils/email'
 
 export default defineEventHandler(async (event) => {
   await ensureInitialized()

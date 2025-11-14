@@ -1,5 +1,3 @@
-import sql, { ensureInitialized } from '#server/utils/database'
-
 export default defineEventHandler(async (event) => {
   await ensureInitialized()
 

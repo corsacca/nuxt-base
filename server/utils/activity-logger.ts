@@ -1,4 +1,4 @@
-import sql from './database'
+import { sql } from './database'
 import crypto from 'crypto'
 import type { H3Event } from 'h3'
 import { getAuthUser } from './auth'

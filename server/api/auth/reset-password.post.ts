@@ -1,6 +1,4 @@
 import bcrypt from 'bcrypt'
-import sql, { ensureInitialized } from '#server/utils/database'
-import { logPasswordReset } from '#server/utils/activity-logger'
 
 export default defineEventHandler(async (event) => {
   await ensureInitialized()

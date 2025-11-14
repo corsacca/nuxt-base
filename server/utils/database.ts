@@ -2,11 +2,11 @@ import postgres from 'postgres'
 import { MigrationRunner } from './migrations'
 
 // Database connection will be initialized lazily
-let sql: ReturnType<typeof postgres> | null = null
+let connection: ReturnType<typeof postgres> | null = null
 
 // Initialize database connection
 function initConnection() {
-  if (sql) return sql
+  if (connection) return connection
 
   // Get database URL from runtime config or environment variable
   const databaseUrl = useRuntimeConfig().databaseUrl || process.env.DATABASE_URL
@@ -18,7 +18,7 @@ function initConnection() {
 
   // Create postgres connection
   // Neon requires SSL and works best with these settings
-  sql = postgres(databaseUrl, {
+  connection = postgres(databaseUrl, {
     ssl: 'require',
     max: 10, // Maximum number of connections
     idle_timeout: 20,
@@ -26,7 +26,7 @@ function initConnection() {
     onnotice: () => {}, // Suppress NOTICE messages (e.g., "table already exists, skipping")
   })
 
-  return sql
+  return connection
 }
 
 // Create a function that acts as a proxy for the sql connection
@@ -40,7 +40,7 @@ function sqlProxy(...args: any[]): any {
 }
 
 // Add a proxy to handle property access (like sql.begin, sql.end, etc.)
-export default new Proxy(sqlProxy, {
+export const sql = new Proxy(sqlProxy, {
   get(target, prop) {
     const connection = initConnection()
     if (!connection) {

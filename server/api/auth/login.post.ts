@@ -1,7 +1,5 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import sql, { ensureInitialized } from '#server/utils/database'
-import { logLogin, logLoginFailed } from '#server/utils/activity-logger'
 
 export default defineEventHandler(async (event) => {
   await ensureInitialized()

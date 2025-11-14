@@ -1,7 +1,5 @@
 import bcrypt from 'bcrypt'
-import sql, { ensureInitialized } from '#server/utils/database'
 import { randomUUID } from 'crypto'
-import { sendTemplateEmail } from '#server/utils/email'
 
 export default defineEventHandler(async (event) => {
   await ensureInitialized()

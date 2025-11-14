@@ -1,9 +1,5 @@
 import bcrypt from 'bcrypt'
 import crypto from 'crypto'
-import sql, { ensureInitialized } from '#server/utils/database'
-import { logEvent } from '#server/utils/activity-logger'
-import { requireAuth } from '#server/utils/auth'
-import { sendTemplateEmail } from '#server/utils/email'
 
 export default defineEventHandler(async (event) => {
   await ensureInitialized()
