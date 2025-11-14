@@ -16,10 +16,13 @@ function initConnection() {
     return null
   }
 
+  // Detect if this is a localhost connection (no SSL required)
+  const isLocalhost = databaseUrl.includes('localhost') || databaseUrl.includes('127.0.0.1')
+
   // Create postgres connection
-  // Neon requires SSL and works best with these settings
+  // Cloud databases (Neon, etc.) require SSL, localhost doesn't
   connection = postgres(databaseUrl, {
-    ssl: 'require',
+    ssl: isLocalhost ? false : 'require',
     max: 10, // Maximum number of connections
     idle_timeout: 20,
     connect_timeout: 30, // Increased timeout for initial connection
