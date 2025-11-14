@@ -1,14 +1,24 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// Base Layer Configuration
+// This layer provides authentication, theme system, and common utilities
+// Consuming projects should extend this and provide their own deployment and runtime configurations
+
 import {fileURLToPath} from "url";
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
+
+  // Modules included in the layer
   modules: ['@nuxt/ui'],
+
+  // Default to SPA mode (can be overridden by consuming projects)
   ssr: false,
+
+  // Layer styles
   css: ['~/assets/css/main.css'],
 
-
+  // Default app head configuration
   app: {
     head: {
       link: [
@@ -19,13 +29,7 @@ export default defineNuxtConfig({
     }
   },
 
-  nitro: {
-    preset: 'vercel',
-    vercel: {
-      regions: ['fra1'] // Frankfurt - matches Neon eu-central-1
-    }
-  },
-
+  // Theme configuration
   colorMode: {
     preference: 'light',
     classSuffix: ''
@@ -36,35 +40,38 @@ export default defineNuxtConfig({
     gray: 'neutral'
   },
 
+  // Alias for server utilities
   alias: {
     '#server': fileURLToPath(new URL('./server', import.meta.url))
   },
 
+  // Runtime config structure - consuming projects must provide actual values
   runtimeConfig: {
     // Private keys (only available on the server-side)
-    jwtSecret: process.env.JWT_SECRET,
-    databaseUrl: process.env.DATABASE_URL,
+    // Consuming projects should set these via environment variables
+    jwtSecret: '',
+    databaseUrl: '',
 
     // SMTP configuration
-    smtpHost: process.env.SMTP_HOST,
-    smtpPort: process.env.SMTP_PORT,
-    smtpUser: process.env.SMTP_USER,
-    smtpPass: process.env.SMTP_PASS,
-    smtpSecure: process.env.SMTP_SECURE,
-    smtpFrom: process.env.SMTP_FROM,
-    smtpRejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED,
+    smtpHost: '',
+    smtpPort: '',
+    smtpUser: '',
+    smtpPass: '',
+    smtpSecure: '',
+    smtpFrom: '',
+    smtpRejectUnauthorized: '',
 
-    // S3 Storage configuration (for private bucket with signed URLs)
-    s3Endpoint: process.env.S3_ENDPOINT,
-    s3Region: process.env.S3_REGION,
-    s3AccessKeyId: process.env.S3_ACCESS_KEY_ID,
-    s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    s3BucketName: process.env.S3_BUCKET_NAME,
+    // S3 Storage configuration
+    s3Endpoint: '',
+    s3Region: '',
+    s3AccessKeyId: '',
+    s3SecretAccessKey: '',
+    s3BucketName: '',
 
     // Public keys (exposed to the frontend)
     public: {
-      nodeEnv: process.env.NODE_ENV || 'development',
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+      nodeEnv: '',
+      siteUrl: ''
     }
   }
 })

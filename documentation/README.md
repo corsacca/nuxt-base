@@ -44,8 +44,20 @@ These documentation files are meant to serve as a quick reference while developi
 ## Project Context
 
 This documentation was created for the current project structure:
-- Nuxt 4.1.0 application
+- **Nuxt 4.1.0 Base Layer** (designed to be extended by other projects)
 - TypeScript support
-- SSR disabled (SPA mode)
+- SSR disabled by default (can be overridden)
 - Black and white theme system
 - Auto-imported composables and components
+- Authentication system with JWT
+- S3 storage integration
+- Email functionality with SMTP
+
+## Layer Documentation
+
+This project is configured as a **Nuxt Layer** that can be extended by other Nuxt applications. For information about:
+- How to use this layer in your projects
+- What features are provided
+- Configuration and setup
+
+See the main [README.md](../README.md) in the project root.

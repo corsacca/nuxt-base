@@ -4,7 +4,102 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Nuxt.js 4.1.0 application with Vue 3, configured as an ES module project. The project uses TypeScript with Nuxt's automatic TypeScript configuration system.
+This is a **Nuxt 4.1.0 Base Layer** designed to be extended by other Nuxt projects. It provides:
+- Authentication system (JWT-based with bcrypt password hashing)
+- Theme system (light/dark mode with localStorage persistence)
+- Email functionality (via Nodemailer with SMTP)
+- S3 storage integration (AWS SDK with presigned URLs)
+- Database utilities (PostgreSQL via `postgres` package)
+- @nuxt/ui integration with custom theme configuration
+
+The project is configured as an ES module and uses TypeScript with Nuxt's automatic TypeScript configuration system.
+
+## Using This Layer in Your Nuxt Project
+
+### Method 1: Local Layer (Recommended for Development)
+
+In your consuming project's `nuxt.config.ts`:
+
+```typescript
+export default defineNuxtConfig({
+  extends: [
+    '../base'  // Relative path to this layer
+  ],
+
+  // Override layer defaults
+  ssr: true,  // Enable SSR if needed
+
+  // Add your deployment configuration
+  nitro: {
+    preset: 'vercel',  // or 'node-server', 'cloudflare', etc.
+  },
+
+  // Provide runtime configuration
+  runtimeConfig: {
+    jwtSecret: process.env.JWT_SECRET,
+    databaseUrl: process.env.DATABASE_URL,
+    smtpHost: process.env.SMTP_HOST,
+    // ... other environment variables
+
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    }
+  }
+})
+```
+
+### Method 2: Git Repository
+
+```typescript
+export default defineNuxtConfig({
+  extends: [
+    'github:yourorg/nuxt-base-layer#main'  // or use a specific tag like #v1.0.0
+  ],
+  // ... rest of your config
+})
+```
+
+### Method 3: NPM Package (if published)
+
+```bash
+npm install @yourorg/nuxt-base-layer
+```
+
+```typescript
+export default defineNuxtConfig({
+  extends: ['@yourorg/nuxt-base-layer'],
+  // ... rest of your config
+})
+```
+
+## What This Layer Provides
+
+### Auto-Imported Composables
+- `useAuth()` - Authentication utilities (login, register, logout, password reset)
+- `useTheme()` - Theme management (light/dark mode toggling)
+
+### Middleware
+- `auth.ts` - Route protection middleware
+
+### Pages (Override These in Your Project)
+- `/login` - Login page
+- `/register` - Registration page
+- `/profile` - User profile page
+- `/reset-password` - Password reset page
+- `/dashboard` - Protected dashboard page
+- `/kitchen` - UI component showcase
+
+### Server API Utilities
+- JWT token generation and verification
+- Password hashing with bcrypt
+- Email sending via SMTP
+- S3 file operations
+- Database connection utilities
+
+### Styling
+- Global CSS with theme variables (black/white theme system)
+- @nuxt/ui with neutral color scheme
+- Tailwind CSS configured
 
 ## Development Commands
 
