@@ -112,7 +112,7 @@ export default defineNuxtConfig({
 ## Project Structure
 
 - `app/app.vue` - Main application entry point with theme toggle functionality
-- `app/assets/css/main.css` - Global CSS with black/white theme variables
+- `app/assets/css/default.css` - Global CSS with black/white theme variables
 - `app/composables/useTheme.ts` - Theme management composable
 - `nuxt.config.ts` - Nuxt configuration with devtools enabled, SSR disabled
 - `tsconfig.json` - TypeScript configuration using Nuxt's reference system
@@ -139,7 +139,7 @@ export default defineNuxtConfig({
 ## Styling System
 
 - Black and white theme system with light/dark mode support
-- Global CSS via `css: ['~/assets/css/main.css']` in nuxt.config.ts
+- Global CSS via `css: ['~/assets/css/default.css']` in nuxt.config.ts
 - CSS custom properties for theme variables
 - Theme toggle button in top-right corner
 - LocalStorage persistence and system preference detection
