@@ -4,7 +4,7 @@
 :root {
   /* Nuxt UI Background colors - Light mode */
   --ui-bg: #ffffff; /* white base background */
-  --ui-bg-elevated: #ffffff; /* white for cards in light mode */
+  --ui-bg-elevated: #374151; /* white for cards in light mode */
   --ui-bg-accented: #ffffff; /* white accented backgrounds */
   --ui-bg-inverted: #000000; /* black for inverted elements */
 
@@ -24,7 +24,8 @@
   --ui-ring: #000000; /* black focus rings */
 
   /* Nuxt UI Primary color - Light mode */
-  --ui-primary: #000000; /* black primary color */
+  --ui-primary: rgba(0, 0, 0, 0.75); /* black primary color with 75% opacity */
+  /*--ui-primary: #000000; !* black primary color *!*/
   --ui-primary-50: #f9fafb;
   --ui-primary-100: #f3f4f6;
   --ui-primary-500: #000000;
@@ -41,6 +42,8 @@
   --color-gray-700: #374151;
   --color-gray-800: #1f2937;
   --color-gray-900: #111827;
+
+  --ui-secondary: color-mix(in oklab, var(--ui-primary) 10%, transparent)
 }
 
 /* Button styles */
@@ -48,6 +51,9 @@ button,
 .btn,
 [role="button"] {
   cursor: pointer;
+}
+button.bg-secondary {
+    color: var(--ui-primary);
 }
 
 /* Theme Variables for dashboard (keep for compatibility) */
@@ -83,7 +89,7 @@ button,
 
   /* Nuxt UI Background colors - Dark mode */
   --ui-bg: #000000; /* black base background */
-  --ui-bg-elevated: #1a1a1a; /* dark gray for cards */
+  --ui-bg-elevated: #e5e7eb; /* dark gray for cards */
   --ui-bg-accented: #1a1a1a; /* accented backgrounds */
   --ui-bg-inverted: #ffffff; /* white for inverted elements */
 
@@ -120,6 +126,8 @@ button,
   --color-gray-700: #e5e7eb;
   --color-gray-800: #f3f4f6;
   --color-gray-900: #f9fafb;
+
+  --ui-secondary:  color-mix(in oklab, var(--ui-primary) 10%, transparent);
 }
 
 /* Global Nuxt UI component theming */
@@ -133,25 +141,6 @@ body {
   background-color: var(--ui-bg);
   color: var(--ui-text);
 }
-
-/* Don't override .bg-white globally - it's used for page backgrounds */
-
-.text-black {
-  color: var(--ui-text) !important;
-}
-
-.text-gray-600 {
-  color: var(--ui-text-muted) !important;
-}
-
-.text-gray-500 {
-  color: var(--ui-text-dimmed) !important;
-}
-
-.border-gray-200 {
-  border-color: var(--ui-border) !important;
-}
-
 /* Nuxt UI Card theming - Grey backgrounds only in dark mode */
 [data-theme="dark"] div[class*="rounded"][class*="ring"],
 [data-theme="dark"] div[class*="rounded"][class*="shadow"],
@@ -161,41 +150,8 @@ body {
 }
 
 /* Nuxt UI Input theming */
-input {
-  background-color: var(--ui-bg) !important;
-  border-color: var(--ui-border) !important;
-  color: var(--ui-text) !important;
-}
-
 input::placeholder {
   color: var(--ui-text-muted) !important;
-}
-
-/* Nuxt UI Button theming - black buttons with 75% opacity on light theme */
-button:not([class*="outline"]):not([class*="ghost"]) {
-  background-color: rgba(0, 0, 0, 0.75) !important;
-  color: white !important;
-}
-
-button:not([class*="outline"]):not([class*="ghost"]):hover:not(:disabled) {
-  background-color: rgba(0, 0, 0, 0.85) !important;
-}
-
-/* Dark theme - add white borders to buttons so they're visible on black background */
-[data-theme="dark"] button:not([class*="outline"]):not([class*="ghost"]) {
-  background-color: rgba(255, 255, 255, 0.1) !important;
-  border: 1px solid rgba(255, 255, 255, 0.3) !important;
-  color: white !important;
-}
-
-[data-theme="dark"] button:not([class*="outline"]):not([class*="ghost"]):hover:not(:disabled) {
-  background-color: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.5) !important;
-}
-
-/* Link hover states - only for text links */
-a:not([role="button"]):hover {
-  color: var(--ui-text-muted);
 }
 
 /* Divider backgrounds */

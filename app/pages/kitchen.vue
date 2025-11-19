@@ -55,17 +55,30 @@
 
           <UCard>
             <template #header>
-              <h3>Button Variants</h3>
+              <h3>Button Colors</h3>
             </template>
             <div class="button-grid">
               <UButton color="primary">Primary</UButton>
+              <UButton color="secondary">Secondary</UButton>
+              <UButton color="success">Success</UButton>
+              <UButton color="info">Info</UButton>
+              <UButton color="warning">Warning</UButton>
+              <UButton color="error">Error</UButton>
+              <UButton color="neutral">Neutral</UButton>
+            </div>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <h3>Button Variants</h3>
+            </template>
+            <div class="button-grid">
+              <UButton variant="solid">Solid</UButton>
               <UButton variant="outline">Outline</UButton>
               <UButton variant="soft">Soft</UButton>
+              <UButton variant="subtle">Subtle</UButton>
               <UButton variant="ghost">Ghost</UButton>
               <UButton variant="link">Link</UButton>
-              <UButton color="gray">Gray</UButton>
-              <UButton color="red">Red</UButton>
-              <UButton color="green">Green</UButton>
             </div>
           </UCard>
 
@@ -87,12 +100,13 @@
         <h2 class="section-title">Links</h2>
         <UCard>
           <div class="link-showcase">
-            <NuxtLink to="/">Home Link</NuxtLink>
-            <NuxtLink to="/profile">Profile Link</NuxtLink>
-            <a href="#">External Link</a>
-            <a href="#" class="link-muted">Muted Link</a>
-            <a href="#" class="link-danger">Danger Link</a>
-            <a href="#" class="link-success">Success Link</a>
+            <ULink to="/">Home Link</ULink>
+            <ULink to="/profile">Profile Link</ULink>
+            <ULink to="/kitchen" inactive-class="text-muted">Inactive Link</ULink>
+            <ULink href="https://nuxt.com" external target="_blank">External Link</ULink>
+            <ULink raw to="#" class="text-error hover:underline">Error Link</ULink>
+            <ULink raw to="#" class="text-success hover:underline">Success Link</ULink>
+            <ULink raw to="#" class="text-warning hover:underline">Warning Link</ULink>
           </div>
         </UCard>
       </section>
@@ -158,15 +172,15 @@
             </template>
             <div class="form-group">
               <label>Default Input</label>
-              <input type="text" placeholder="Enter text..." class="input">
+              <UInput placeholder="Enter text..." />
             </div>
             <div class="form-group">
               <label>Email Input</label>
-              <input type="email" placeholder="email@example.com" class="input">
+              <UInput type="email" placeholder="email@example.com" />
             </div>
             <div class="form-group">
               <label>Disabled Input</label>
-              <input type="text" disabled placeholder="Disabled" class="input">
+              <UInput disabled placeholder="Disabled" />
             </div>
           </UCard>
 
@@ -176,15 +190,11 @@
             </template>
             <div class="form-group">
               <label>Textarea</label>
-              <textarea placeholder="Enter long text..." class="textarea" rows="3"></textarea>
+              <UTextarea placeholder="Enter long text..." :rows="3" />
             </div>
             <div class="form-group">
               <label>Select</label>
-              <select class="select">
-                <option>Option 1</option>
-                <option>Option 2</option>
-                <option>Option 3</option>
-              </select>
+              <USelect :items="['Option 1', 'Option 2', 'Option 3']" placeholder="Select an option" />
             </div>
           </UCard>
 
@@ -193,28 +203,15 @@
               <h3>Checkboxes & Radio</h3>
             </template>
             <div class="form-group">
-              <label class="checkbox-label">
-                <input type="checkbox" checked>
-                <span>Checkbox Option 1</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox">
-                <span>Checkbox Option 2</span>
-              </label>
-              <label class="checkbox-label">
-                <input type="checkbox" disabled>
-                <span>Disabled Checkbox</span>
-              </label>
+              <UCheckbox label="Checkbox Option 1" default-value />
+              <UCheckbox label="Checkbox Option 2" />
+              <UCheckbox label="Disabled Checkbox" disabled />
             </div>
             <div class="form-group">
-              <label class="radio-label">
-                <input type="radio" name="radio" checked>
-                <span>Radio Option 1</span>
-              </label>
-              <label class="radio-label">
-                <input type="radio" name="radio">
-                <span>Radio Option 2</span>
-              </label>
+              <URadioGroup v-model="radioValue" :items="[
+                { label: 'Radio Option 1', value: '1' },
+                { label: 'Radio Option 2', value: '2' }
+              ]" />
             </div>
           </UCard>
         </div>
@@ -224,18 +221,10 @@
       <section class="section">
         <h2 class="section-title">Alerts & Notifications</h2>
         <div class="space-y-3">
-          <div class="alert alert-info">
-            <strong>Info:</strong> This is an informational message.
-          </div>
-          <div class="alert alert-success">
-            <strong>Success:</strong> Operation completed successfully!
-          </div>
-          <div class="alert alert-warning">
-            <strong>Warning:</strong> Please check your input.
-          </div>
-          <div class="alert alert-error">
-            <strong>Error:</strong> Something went wrong.
-          </div>
+          <UAlert color="primary" variant="subtle" title="Info" description="This is an informational message." icon="i-lucide-info" />
+          <UAlert color="success" variant="subtle" title="Success" description="Operation completed successfully!" icon="i-lucide-check-circle" />
+          <UAlert color="warning" variant="subtle" title="Warning" description="Please check your input." icon="i-lucide-alert-triangle" />
+          <UAlert color="error" variant="subtle" title="Error" description="Something went wrong." icon="i-lucide-x-circle" />
         </div>
       </section>
 
@@ -244,13 +233,13 @@
         <h2 class="section-title">Badges & Tags</h2>
         <UCard>
           <div class="badge-showcase">
-            <span class="badge badge-default">Default</span>
-            <span class="badge badge-primary">Primary</span>
-            <span class="badge badge-success">Success</span>
-            <span class="badge badge-warning">Warning</span>
-            <span class="badge badge-error">Error</span>
-            <span class="badge badge-info">Info</span>
-            <span class="badge badge-outline">Outline</span>
+            <UBadge color="neutral" variant="solid" label="Default" />
+            <UBadge color="primary" variant="solid" label="Primary" />
+            <UBadge color="success" variant="solid" label="Success" />
+            <UBadge color="warning" variant="solid" label="Warning" />
+            <UBadge color="error" variant="solid" label="Error" />
+            <UBadge color="info" variant="solid" label="Info" />
+            <UBadge color="neutral" variant="outline" label="Outline" />
           </div>
         </UCard>
       </section>
@@ -299,44 +288,7 @@
       <section class="section">
         <h2 class="section-title">Table</h2>
         <UCard>
-          <div class="table-container">
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Role</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>John Doe</td>
-                  <td>john@example.com</td>
-                  <td>Admin</td>
-                  <td><span class="badge badge-success">Active</span></td>
-                </tr>
-                <tr>
-                  <td>Jane Smith</td>
-                  <td>jane@example.com</td>
-                  <td>User</td>
-                  <td><span class="badge badge-success">Active</span></td>
-                </tr>
-                <tr>
-                  <td>Bob Johnson</td>
-                  <td>bob@example.com</td>
-                  <td>User</td>
-                  <td><span class="badge badge-warning">Pending</span></td>
-                </tr>
-                <tr>
-                  <td>Alice Williams</td>
-                  <td>alice@example.com</td>
-                  <td>Moderator</td>
-                  <td><span class="badge badge-error">Inactive</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <UTable :columns="tableColumns" :data="tableRows" />
         </UCard>
       </section>
 
@@ -362,9 +314,9 @@ greet('World');</code></pre>
         <h2 class="section-title">Dividers & Spacing</h2>
         <UCard>
           <p>Content above divider</p>
-          <hr class="divider">
+          <USeparator />
           <p>Content below divider</p>
-          <hr class="divider">
+          <USeparator />
           <p>Another section with different spacing</p>
         </UCard>
       </section>
@@ -375,11 +327,11 @@ greet('World');</code></pre>
         <div class="dashboard-grid">
           <UCard>
             <template #header>
-              <h3>Spinners</h3>
+              <h3>Loading Buttons</h3>
             </template>
-            <div class="spinner-showcase">
-              <div class="spinner"></div>
-              <div class="spinner spinner-lg"></div>
+            <div class="button-grid">
+              <UButton loading>Loading</UButton>
+              <UButton loading size="lg">Large Loading</UButton>
             </div>
           </UCard>
 
@@ -387,10 +339,10 @@ greet('World');</code></pre>
             <template #header>
               <h3>Skeleton Loading</h3>
             </template>
-            <div class="skeleton-showcase">
-              <div class="skeleton skeleton-text"></div>
-              <div class="skeleton skeleton-text"></div>
-              <div class="skeleton skeleton-text" style="width: 60%;"></div>
+            <div class="space-y-3">
+              <USkeleton class="h-4 w-full" />
+              <USkeleton class="h-4 w-full" />
+              <USkeleton class="h-4 w-[60%]" />
             </div>
           </UCard>
         </div>
@@ -400,6 +352,8 @@ greet('World');</code></pre>
 </template>
 
 <script setup>
+import { h, resolveComponent } from 'vue'
+
 definePageMeta({
   middleware: 'auth'
 })
@@ -411,6 +365,46 @@ const handleLogout = async () => {
   await logout()
   await router.push('/login')
 }
+
+// Radio group model
+const radioValue = ref('1')
+
+// Table data
+const tableColumns = [
+  {
+    id: 'name',
+    accessorKey: 'name',
+    header: 'Name'
+  },
+  {
+    id: 'email',
+    accessorKey: 'email',
+    header: 'Email',
+    cell: ({ row }) => h('div', { class: 'lowercase' }, row.getValue('email'))
+  },
+  {
+    id: 'role',
+    accessorKey: 'role',
+    header: 'Role'
+  },
+  {
+    id: 'status',
+    accessorKey: 'status',
+    header: 'Status',
+    cell: ({ row }) => {
+      const status = row.getValue('status')
+      const color = status === 'Active' ? 'success' : status === 'Pending' ? 'warning' : 'error'
+      return h(resolveComponent('UBadge'), { color, label: status })
+    }
+  }
+]
+
+const tableRows = [
+  { name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'Active' },
+  { name: 'Jane Smith', email: 'jane@example.com', role: 'User', status: 'Active' },
+  { name: 'Bob Johnson', email: 'bob@example.com', role: 'User', status: 'Pending' },
+  { name: 'Alice Williams', email: 'alice@example.com', role: 'Moderator', status: 'Inactive' }
+]
 </script>
 
 <style scoped>
@@ -470,16 +464,6 @@ const handleLogout = async () => {
   background: var(--bg-hover);
 }
 
-.logout-button {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
 
 .logout-button:hover {
   background: var(--bg-hover);
@@ -578,29 +562,6 @@ const handleLogout = async () => {
   gap: 1rem;
 }
 
-:deep(a) {
-  color: #3b82f6;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-:deep(a:hover) {
-  color: #2563eb;
-  text-decoration: underline;
-}
-
-.link-muted {
-  color: var(--text-muted) !important;
-}
-
-.link-danger {
-  color: #ef4444 !important;
-}
-
-.link-success {
-  color: #10b981 !important;
-}
-
 /* Card Styles */
 .card-footer {
   display: flex;
@@ -646,128 +607,12 @@ const handleLogout = async () => {
   font-weight: 500;
 }
 
-.input, .textarea, .select {
-  width: 100%;
-  padding: 0.625rem;
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 0.875rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.input:focus, .textarea:focus, .select:focus {
-  outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.input:disabled {
-  background: var(--bg-secondary);
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.checkbox-label, .radio-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-  cursor: pointer;
-  color: var(--text);
-}
-
-.checkbox-label input, .radio-label input {
-  width: 1.125rem;
-  height: 1.125rem;
-  cursor: pointer;
-}
-
-/* Alert Styles */
-.alert {
-  padding: 1rem;
-  border-radius: 0.5rem;
-  border: 1px solid;
-  margin-bottom: 1rem;
-}
-
-.alert-info {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: var(--text);
-}
-
-.alert-success {
-  background: rgba(16, 185, 129, 0.1);
-  border-color: rgba(16, 185, 129, 0.3);
-  color: var(--text);
-}
-
-.alert-warning {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: rgba(245, 158, 11, 0.3);
-  color: var(--text);
-}
-
-.alert-error {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.3);
-  color: var(--text);
-}
 
 /* Badge Styles */
 .badge-showcase {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-}
-
-.badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.025em;
-}
-
-.badge-default {
-  background: var(--bg-secondary);
-  color: var(--text);
-  border: 1px solid var(--border);
-}
-
-.badge-primary {
-  background: #3b82f6;
-  color: white;
-}
-
-.badge-success {
-  background: #10b981;
-  color: white;
-}
-
-.badge-warning {
-  background: #f59e0b;
-  color: white;
-}
-
-.badge-error {
-  background: #ef4444;
-  color: white;
-}
-
-.badge-info {
-  background: #06b6d4;
-  color: white;
-}
-
-.badge-outline {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
 }
 
 /* List Styles */
@@ -786,105 +631,9 @@ const handleLogout = async () => {
   margin-bottom: 0.5rem;
 }
 
-/* Table Styles */
-.table-container {
-  overflow-x: auto;
-}
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
 
-.table thead {
-  background: var(--bg-secondary);
-  border-bottom: 2px solid var(--border);
-}
-
-.table th {
-  padding: 0.75rem;
-  text-align: left;
-  font-weight: 600;
-  color: var(--text);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.table td {
-  padding: 0.75rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
-}
-
-.table tbody tr:hover {
-  background: var(--bg-hover);
-}
-
-.table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* Divider Styles */
-.divider {
-  border: none;
-  border-top: 1px solid var(--border);
-  margin: 1.5rem 0;
-}
-
-/* Loading Styles */
-.spinner-showcase {
-  display: flex;
-  gap: 2rem;
-  align-items: center;
-}
-
-.spinner {
-  width: 2rem;
-  height: 2rem;
-  border: 3px solid var(--border);
-  border-top-color: #3b82f6;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.spinner-lg {
-  width: 3rem;
-  height: 3rem;
-  border-width: 4px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.skeleton-showcase {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--bg-secondary) 0%,
-    var(--bg-hover) 50%,
-    var(--bg-secondary) 100%
-  );
-  background-size: 200% 100%;
-  animation: skeleton-loading 1.5s ease-in-out infinite;
-  border-radius: 0.25rem;
-}
-
-.skeleton-text {
-  height: 1rem;
-  width: 100%;
-}
-
-@keyframes skeleton-loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+/* Loading Styles - handled by Nuxt UI components */
 
 /* Nuxt UI Card overrides for dashboard */
 :deep([class*="Card"]) {
@@ -937,8 +686,5 @@ const handleLogout = async () => {
     flex-direction: column;
   }
 
-  .table-container {
-    font-size: 0.875rem;
-  }
 }
 </style>
