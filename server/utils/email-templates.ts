@@ -1,4 +1,5 @@
 export interface EmailTemplateData {
+  appName?: string
   userName?: string
   userEmail?: string
   timestamp?: string
@@ -33,7 +34,7 @@ function buildEmailTemplate(
     html: (data: EmailTemplateData) => `
       <div style="${baseStyles.container}">
         <div style="${baseStyles.header}">
-          <h1 style="margin: 0; font-size: 24px;">Stream</h1>
+          <h1 style="margin: 0; font-size: 24px;">${data.appName || 'Base'}</h1>
           <p style="margin: 10px 0 0 0; opacity: 0.9;">${subject}</p>
         </div>
         
@@ -53,7 +54,7 @@ export const testEmailTemplate: EmailTemplate = buildEmailTemplate(
     <h2 style="color: #333; margin-top: 0;">Hello ${data.userName || 'User'}!</h2>
     
     <p style="color: #666; line-height: 1.6;">
-      This is a test email from the Stream admin panel. If you're receiving this email, 
+      This is a test email from the ${data.appName || 'Base'} admin panel. If you're receiving this email,
       it means the email system is working correctly.
     </p>
     
@@ -91,11 +92,11 @@ export const testEmailTemplate: EmailTemplate = buildEmailTemplate(
     `}
   `,
   (data: EmailTemplateData) => `
-Test Email from Stream
+Test Email from ${data.appName || 'Base'}
 
 Hello ${data.userName || 'User'}!
 
-This is a test email from the Stream admin panel. If you're receiving this email, 
+This is a test email from the ${data.appName || 'Base'} admin panel. If you're receiving this email,
 it means the email system is working correctly.
 
 Email Details:
@@ -104,14 +105,14 @@ Email Details:
 - Timestamp: ${data.timestamp || 'Unknown'}
 - Environment: ${data.environment || 'Development (MailHog)'}
 
-${data.environment === 'Development (MailHog)' ? 
+${data.environment === 'Development (MailHog)' ?
 `You can view this email in the MailHog web interface at http://localhost:8025
 
-This is a test email sent from the Stream application.
-If you're seeing this in production, please contact your administrator.` : 
+This is a test email sent from the ${data.appName || 'Base'} application.
+If you're seeing this in production, please contact your administrator.` :
 `This email was sent via SMTP in production mode.
 
-This is a test email sent from the Stream application.`}
+This is a test email sent from the ${data.appName || 'Base'} application.`}
   `
 )
 
@@ -122,7 +123,7 @@ export const welcomeEmailTemplate: EmailTemplate = buildEmailTemplate(
     <h2 style="color: #333; margin-top: 0;">Welcome ${data.userName || 'User'}!</h2>
     
     <p style="color: #666; line-height: 1.6;">
-      Thank you for joining Stream! We're excited to have you on board.
+      Thank you for joining ${data.appName || 'Base'}! We're excited to have you on board.
     </p>
     
     <p style="color: #666; line-height: 1.6;">
@@ -143,11 +144,11 @@ export const welcomeEmailTemplate: EmailTemplate = buildEmailTemplate(
     </p>
   `,
   (data: EmailTemplateData) => `
-Welcome to Stream!
+Welcome to ${data.appName || 'Base'}!
 
 Hello ${data.userName || 'User'}!
 
-Thank you for joining Stream! We're excited to have you on board.
+Thank you for joining ${data.appName || 'Base'}! We're excited to have you on board.
 
 We hope this website is helpful for you, whether you're clearing up some space or preparing for a big transition.
 
@@ -167,7 +168,7 @@ export const notificationEmailTemplate: EmailTemplate = buildEmailTemplate(
     <h2 style="color: #333; margin-top: 0;">Hello ${data.userName || 'User'}!</h2>
     
     <p style="color: #666; line-height: 1.6;">
-      You have a new notification from Stream.
+      You have a new notification from ${data.appName || 'Base'}.
     </p>
     
     <div style="${baseStyles.infoBox}">
@@ -184,11 +185,11 @@ export const notificationEmailTemplate: EmailTemplate = buildEmailTemplate(
     ` : ''}
   `,
   (data: EmailTemplateData) => `
-New Notification from Stream
+New Notification from ${data.appName || 'Base'}
 
 Hello ${data.userName || 'User'}!
 
-You have a new notification from Stream.
+You have a new notification from ${data.appName || 'Base'}.
 
 Notification Details:
 ${data.message || 'No message provided'}
@@ -196,7 +197,7 @@ ${data.message || 'No message provided'}
 ${data.actionUrl ? `${data.actionText || 'View Details'}: ${data.actionUrl}` : ''}
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -219,7 +220,7 @@ export const bulkEmailTemplate: EmailTemplate = buildEmailTemplate(
     ` : ''}
   `,
   (data: EmailTemplateData) => `
-Admin Message from Stream
+Admin Message from ${data.appName || 'Base'}
 
 Hello ${data.userName || 'User'}!
 
@@ -228,7 +229,7 @@ ${data.message || 'No message provided'}
 ${data.actionUrl ? `${data.actionText || 'Learn More'}: ${data.actionUrl}` : ''}
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -239,7 +240,7 @@ export const verificationEmailTemplate: EmailTemplate = buildEmailTemplate(
     <h2 style="color: #333; margin-top: 0;">Hello ${data.userName || 'User'}!</h2>
     
     <p style="color: #666; line-height: 1.6;">
-      Thank you for registering with Stream! To complete your registration, 
+      Thank you for registering with ${data.appName || 'Base'}! To complete your registration,
       please verify your email address by clicking the button below.
     </p>
     
@@ -258,27 +259,27 @@ export const verificationEmailTemplate: EmailTemplate = buildEmailTemplate(
     </p>
 
     <p style="color: #666; line-height: 1.6; margin-top: 20px; font-size: 14px;">
-      This link will expire in 24 hours. If you didn't create an account with Stream,
+      This link will expire in 24 hours. If you didn't create an account with ${data.appName || 'Base'},
       you can safely ignore this email.
     </p>
   `,
   (data: EmailTemplateData) => `
-Verify Your Email Address - Stream
+Verify Your Email Address - ${data.appName || 'Base'}
 
 Hello ${data.userName || 'User'}!
 
-Thank you for registering with Stream! To complete your registration, 
+Thank you for registering with ${data.appName || 'Base'}! To complete your registration,
 please verify your email address by visiting the link below:
 
 ${data.verificationUrl || '#'}
 
 If the link doesn't work, copy and paste it into your browser.
 
-This link will expire in 24 hours. If you didn't create an account with Stream, 
+This link will expire in 24 hours. If you didn't create an account with ${data.appName || 'Base'},
 you can safely ignore this email.
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -311,7 +312,7 @@ export const commentNotificationEmailTemplate: EmailTemplate = buildEmailTemplat
     </p>
   `,
   (data: EmailTemplateData) => `
-New Comment on Your Sale Item - Stream
+New Comment on Your Sale Item - ${data.appName || 'Base'}
 
 Hello ${data.userName || 'Sale Admin'}!
 
@@ -325,10 +326,10 @@ Comment Details:
 
 View the comment at: ${data.actionUrl || '#'}
 
-You're receiving this notification because you're an admin of this sale. 
+You're receiving this notification because you're an admin of this sale.
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -358,7 +359,7 @@ export const subscriberCommentNotificationEmailTemplate: EmailTemplate = buildEm
     </p>
   `,
   (data: EmailTemplateData) => `
-New Comment on: ${data.itemName || 'Sale Item'} - Stream
+New Comment on: ${data.itemName || 'Sale Item'} - ${data.appName || 'Base'}
 
 Hi ${data.userName || 'there'}!
 
@@ -372,7 +373,7 @@ View the entry at: ${data.actionUrl || '#'}
 You're receiving this because you subscribed to notifications for this item.
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -404,7 +405,7 @@ export const entryClaimedNotificationEmailTemplate: EmailTemplate = buildEmailTe
     </p>
   `,
   (data: EmailTemplateData) => `
-Item Claimed - Stream
+Item Claimed - ${data.appName || 'Base'}
 
 Hi ${data.userName || 'there'}!
 
@@ -420,7 +421,7 @@ View the entry at: ${data.actionUrl || '#'}
 You're receiving this because you subscribed to notifications for this item.
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -459,11 +460,11 @@ export const emailChangeVerificationTemplate: EmailTemplate = buildEmailTemplate
     </p>
   `,
   (data: EmailTemplateData) => `
-Confirm Your New Email Address - Stream
+Confirm Your New Email Address - ${data.appName || 'Base'}
 
 Hello ${data.userName || 'User'}!
 
-You requested to change your email address from ${data.oldEmail || 'your current email'} 
+You requested to change your email address from ${data.oldEmail || 'your current email'}
 to ${data.newEmail || 'a new email'}.
 
 To confirm this change, please visit the link below:
@@ -472,11 +473,11 @@ ${data.verificationUrl || '#'}
 
 If the link doesn't work, copy and paste it into your browser.
 
-This link will expire in 24 hours. If you didn't request this email change, 
+This link will expire in 24 hours. If you didn't request this email change,
 you can safely ignore this email and your current email address will remain unchanged.
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -487,7 +488,7 @@ export const passwordResetEmailTemplate: EmailTemplate = buildEmailTemplate(
     <h2 style="color: #333; margin-top: 0;">Hello ${data.userName || 'User'}!</h2>
 
     <p style="color: #666; line-height: 1.6;">
-      You requested to reset your password for your Stream account.
+      You requested to reset your password for your ${data.appName || 'Base'} account.
     </p>
 
     <p style="color: #666; line-height: 1.6;">
@@ -519,11 +520,11 @@ export const passwordResetEmailTemplate: EmailTemplate = buildEmailTemplate(
     </p>
   `,
   (data: EmailTemplateData) => `
-Reset Your Password - Stream
+Reset Your Password - ${data.appName || 'Base'}
 
 Hello ${data.userName || 'User'}!
 
-You requested to reset your password for your Stream account.
+You requested to reset your password for your ${data.appName || 'Base'} account.
 
 To reset your password, please visit the link below:
 
@@ -538,7 +539,7 @@ For security reasons, if you didn't request this password reset,
 we recommend changing your password immediately after logging in.
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 
@@ -633,7 +634,7 @@ export const dailySummaryEmailTemplate: EmailTemplate = buildEmailTemplate(
     </p>
   `,
   (data: EmailTemplateData) => `
-Daily Activity Report - Stream
+Daily Activity Report - ${data.appName || 'Base'}
 
 Here's your daily summary for ${data.date || 'today'}:
 
@@ -661,7 +662,7 @@ ${data.newItems?.count > 0 || data.totalComments > 0 || data.totalClaimed > 0 ? 
 This is an automated daily summary sent to all superadmins.
 
 Best regards,
-The Stream Team
+The ${data.appName || 'Base'} Team
   `
 )
 

@@ -158,7 +158,23 @@ export async function sendBulkEmails(emails: EmailOptions[]): Promise<{ success:
 
 export async function sendTemplateEmail(options: TemplateEmailOptions): Promise<boolean> {
   try {
-    const { subject, html, text } = renderEmailTemplate(options.template, options.data)
+    // Get app name from runtime config
+    let appName = 'Base'
+    try {
+      const config = useRuntimeConfig()
+      appName = config.appName || 'Base'
+    } catch {
+      // Fallback if config not available
+      appName = 'Base'
+    }
+
+    // Merge appName into template data
+    const templateData = {
+      ...options.data,
+      appName
+    }
+
+    const { subject, html, text } = renderEmailTemplate(options.template, templateData)
 
     return await sendEmail({
       to: options.to,

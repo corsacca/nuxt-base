@@ -5,6 +5,8 @@
 
 import {fileURLToPath} from "url";
 
+const appTitle = process.env.APP_TITLE || 'Base'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
@@ -21,7 +23,7 @@ export default defineNuxtConfig({
   // Default app head configuration
   app: {
     head: {
-      title: 'Base',
+      title: appTitle,
       link: [
         { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
@@ -45,6 +47,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     // Private keys (only available on the server-side)
     // Consuming projects should set these via environment variables
+    appName: appTitle,
     jwtSecret: process.env.JWT_SECRET || '',
     databaseUrl: process.env.DATABASE_URL || '',
 
