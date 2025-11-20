@@ -2,8 +2,6 @@ import bcrypt from 'bcrypt'
 import { randomUUID } from 'crypto'
 
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   const { email, password, display_name } = await readBody(event)
 
   if (!email || !password || !display_name) {

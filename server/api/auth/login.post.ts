@@ -2,8 +2,6 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   const { email, password } = await readBody(event)
 
   if (!email || !password) {

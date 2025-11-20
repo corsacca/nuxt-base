@@ -1,6 +1,4 @@
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   const authUser = getAuthUser(event)
 
   if (!authUser) {

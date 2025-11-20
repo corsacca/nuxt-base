@@ -1,6 +1,4 @@
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   // Require authentication
   const user = requireAuth(event)
 

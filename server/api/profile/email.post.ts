@@ -2,8 +2,6 @@ import bcrypt from 'bcrypt'
 import crypto from 'crypto'
 
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   // Require authentication
   const user = requireAuth(event)
 

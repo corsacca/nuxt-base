@@ -1,6 +1,4 @@
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   const query = getQuery(event)
   const token = query.token as string
 

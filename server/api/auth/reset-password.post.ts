@@ -1,8 +1,6 @@
 import bcrypt from 'bcrypt'
 
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   const { token, password, confirmPassword } = await readBody(event)
 
   // Validate inputs

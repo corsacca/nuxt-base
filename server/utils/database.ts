@@ -1,5 +1,4 @@
 import postgres from 'postgres'
-import { MigrationRunner } from './migrations'
 
 // Database connection will be initialized lazily
 let connection: ReturnType<typeof postgres> | null = null
@@ -63,44 +62,4 @@ export async function tableExists(tableName: string): Promise<boolean> {
     ) as exists
   `
   return result[0]?.exists || false
-}
-
-// Helper function to initialize database schema
-// Schema is now managed through migrations - this is kept for backward compatibility
-export async function initDatabase() {
-  const connection = initConnection()
-  if (!connection) {
-    console.warn('Database not configured, skipping initialization')
-    return
-  }
-
-  // All schema creation is now handled by migrations
-  console.log('Database schema managed by migrations')
-}
-
-// Initialize database on first use in a lazy manner
-let initialized = false
-
-export async function ensureInitialized() {
-  // Skip initialization in production if SKIP_INIT is set
-  // Set this env var in Vercel after first successful deployment
-  const config = useRuntimeConfig()
-  if (config.public.nodeEnv === 'production' && process.env.SKIP_INIT === 'true') {
-    return
-  }
-
-  const connection = initConnection()
-  if (!connection) {
-    throw new Error('Database not configured')
-  }
-
-  if (!initialized) {
-    await initDatabase()
-
-    // Run migrations after initial schema is created
-    const migrationRunner = new MigrationRunner(connection)
-    await migrationRunner.runMigrations()
-
-    initialized = true
-  }
 }

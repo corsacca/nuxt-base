@@ -1,8 +1,6 @@
 import crypto from 'crypto'
 
 export default defineEventHandler(async (event) => {
-  await ensureInitialized()
-
   const { email } = await readBody(event)
 
   // Basic validation
