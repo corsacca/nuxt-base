@@ -70,15 +70,6 @@ async function handleRegister() {
 
     if (result.success) {
       success.value = true
-      // Wait 3 seconds then redirect to login
-      setTimeout(() => {
-        const redirect = route.query.redirect as string
-        if (redirect) {
-          router.push(`/login?redirect=${encodeURIComponent(redirect)}`)
-        } else {
-          router.push('/login')
-        }
-      }, 3000)
     } else {
       error.value = result.message || 'Registration failed. Please try again.'
     }
@@ -121,7 +112,7 @@ const redirectToLogin = () => {
             color="green"
             variant="soft"
             title="Registration Successful!"
-            description="Please check your email to verify your account. Redirecting to login..."
+            description="Please check your email to verify your account."
             :ui="{ icon: 'i-lucide-check-circle' }"
           />
         </div>
