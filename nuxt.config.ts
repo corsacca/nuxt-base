@@ -58,6 +58,7 @@ export default defineNuxtConfig({
     smtpPass: process.env.SMTP_PASS || '',
     smtpSecure: process.env.SMTP_SECURE || '',
     smtpFrom: process.env.SMTP_FROM || '',
+    smtpFromName: process.env.SMTP_FROM_NAME || '',
     smtpRejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED || '',
 
     // S3 Storage configuration

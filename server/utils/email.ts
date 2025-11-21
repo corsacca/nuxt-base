@@ -10,7 +10,7 @@ let transporter: nodemailer.Transporter | null = null
 // Get SMTP settings from environment variables
 function getSmtpEnvironmentSettings() {
   // Try to get runtime config first (for production builds), then fallback to process.env
-  let SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, SMTP_SECURE, SMTP_REJECT_UNAUTHORIZED
+  let SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_FROM, SMTP_FROM_NAME, SMTP_SECURE, SMTP_REJECT_UNAUTHORIZED, APP_NAME
 
   try {
     // Use runtime config if available (production build)
@@ -20,8 +20,10 @@ function getSmtpEnvironmentSettings() {
     SMTP_USER = config.smtpUser || process.env.SMTP_USER
     SMTP_PASS = config.smtpPass || process.env.SMTP_PASS
     SMTP_FROM = config.smtpFrom || process.env.SMTP_FROM
+    SMTP_FROM_NAME = config.smtpFromName || process.env.SMTP_FROM_NAME
     SMTP_SECURE = config.smtpSecure || process.env.SMTP_SECURE
     SMTP_REJECT_UNAUTHORIZED = config.smtpRejectUnauthorized || process.env.SMTP_REJECT_UNAUTHORIZED
+    APP_NAME = config.appName || process.env.APP_NAME
   } catch {
     // Fallback to process.env (development mode)
     SMTP_HOST = process.env.SMTP_HOST
@@ -29,8 +31,10 @@ function getSmtpEnvironmentSettings() {
     SMTP_USER = process.env.SMTP_USER
     SMTP_PASS = process.env.SMTP_PASS
     SMTP_FROM = process.env.SMTP_FROM
+    SMTP_FROM_NAME = process.env.SMTP_FROM_NAME
     SMTP_SECURE = process.env.SMTP_SECURE
     SMTP_REJECT_UNAUTHORIZED = process.env.SMTP_REJECT_UNAUTHORIZED
+    APP_NAME = process.env.APP_NAME
   }
 
   return {
@@ -39,8 +43,10 @@ function getSmtpEnvironmentSettings() {
     SMTP_USER,
     SMTP_PASS,
     SMTP_FROM,
+    SMTP_FROM_NAME,
     SMTP_SECURE,
-    SMTP_REJECT_UNAUTHORIZED
+    SMTP_REJECT_UNAUTHORIZED,
+    APP_NAME
   }
 }
 
@@ -108,12 +114,13 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     // Get from email from environment
     let fromEmail = options.from
     if (!fromEmail) {
-      if (isDevelopment) {
-        fromEmail = 'noreply@localhost.local'
-      } else {
-        const envSettings = getSmtpEnvironmentSettings()
-        fromEmail = envSettings.SMTP_FROM || 'noreply@yourdomain.com'
-      }
+      const envSettings = getSmtpEnvironmentSettings()
+      const fromName = envSettings.SMTP_FROM_NAME || envSettings.APP_NAME
+      const fromAddress = isDevelopment
+        ? 'noreply@localhost.local'
+        : (envSettings.SMTP_FROM || 'noreply@yourdomain.com')
+
+      fromEmail = fromName ? `${fromName} <${fromAddress}>` : fromAddress
     }
 
     const mailOptions = {
