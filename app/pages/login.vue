@@ -98,7 +98,7 @@ function switchToReset() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-white px-4 py-12">
+  <div class="min-h-screen flex items-center justify-center bg-(--ui-bg) px-4 py-12">
     <div class="w-full max-w-md">
       <!-- Theme Toggle -->
       <div class="flex justify-end mb-4">
@@ -107,21 +107,21 @@ function switchToReset() {
 
       <!-- Logo/Header -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-black mb-2">
+        <h1 class="text-4xl font-bold text-(--ui-text) mb-2">
           {{ view === 'login' ? 'Welcome Back' : 'Reset Password' }}
         </h1>
-        <p class="text-gray-600">
+        <p class="text-(--ui-text-muted)">
           {{ view === 'login' ? 'Sign in to your account' : 'Enter your email to receive reset instructions' }}
         </p>
       </div>
 
       <!-- Login View -->
-      <UCard v-if="view === 'login'" class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+      <UCard v-if="view === 'login'" :ui="{ body: 'p-6 sm:p-8' }">
         <form @submit.prevent="handleLogin" class="space-y-6">
           <!-- Success Alert -->
           <UAlert
             v-if="successMessage"
-            color="green"
+            color="success"
             variant="soft"
             :title="successMessage"
             @close="successMessage = ''"
@@ -131,7 +131,7 @@ function switchToReset() {
           <!-- Error Alert -->
           <UAlert
             v-if="error"
-            color="red"
+            color="error"
             variant="soft"
             :title="error"
             @close="error = ''"
@@ -173,7 +173,7 @@ function switchToReset() {
             <button
               type="button"
               @click="switchToReset"
-              class="text-sm ghost text-gray-600 hover:text-black transition-colors"
+              class="text-sm text-(--ui-text-muted) hover:text-(--ui-text) transition-colors"
               :disabled="loading"
             >
               Forgot Password?
@@ -195,10 +195,10 @@ function switchToReset() {
           <!-- Divider -->
           <div class="relative">
             <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-200"></div>
+              <div class="w-full border-t border-(--ui-border)"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-white text-gray-500">Don't have an account?</span>
+              <span class="px-2 bg-(--ui-bg) text-(--ui-text-muted)">Don't have an account?</span>
             </div>
           </div>
 
@@ -217,21 +217,21 @@ function switchToReset() {
       </UCard>
 
       <!-- Forgot Password View -->
-      <UCard v-else class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+      <UCard v-else :ui="{ body: 'p-6 sm:p-8' }">
         <form @submit.prevent="handleForgotPassword" class="space-y-6">
           <!-- Success Message -->
           <div v-if="resetSuccess" class="space-y-4">
             <UAlert
-              color="green"
+              color="success"
               variant="soft"
               title="Email Sent!"
               :close-button="{ icon: 'i-lucide-x', color: 'gray', variant: 'ghost' }"
               @close="resetSuccess = false"
             />
-            <p class="text-gray-600">
+            <p class="text-(--ui-text-muted)">
               If an account with <strong>{{ sentToEmail }}</strong> exists, you will receive password reset instructions shortly.
             </p>
-            <p class="text-sm text-gray-500">
+            <p class="text-sm text-(--ui-text-dimmed)">
               Check your email inbox and spam folder.
             </p>
           </div>
@@ -241,7 +241,7 @@ function switchToReset() {
             <!-- Error Alert -->
             <UAlert
               v-if="resetError"
-              color="red"
+              color="error"
               variant="soft"
               :title="resetError"
               @close="resetError = ''"
@@ -281,7 +281,7 @@ function switchToReset() {
             <button
               type="button"
               @click="switchToLogin"
-              class="text-sm text-gray-600 hover:text-black transition-colors"
+              class="text-sm text-(--ui-text-muted) hover:text-(--ui-text) transition-colors"
               :disabled="resetLoading"
             >
               ← Back to Login
@@ -291,7 +291,7 @@ function switchToReset() {
       </UCard>
 
       <!-- Footer -->
-      <p class="text-center text-sm text-gray-500 mt-8">
+      <p class="text-center text-sm text-(--ui-text-dimmed) mt-8">
         By signing in, you agree to our Terms of Service and Privacy Policy
       </p>
     </div>

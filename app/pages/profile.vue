@@ -198,18 +198,18 @@ async function handlePasswordChange() {
 </script>
 
 <template>
-  <div class="min-h-screen profile-page">
+  <div class="min-h-screen bg-(--ui-bg)">
     <div class="container mx-auto px-4 py-8">
       <div class="max-w-2xl mx-auto space-y-6">
         <!-- Header -->
         <div class="flex items-center justify-between">
-          <h1 class="text-3xl font-bold profile-title">Profile Settings</h1>
+          <h1 class="text-3xl font-bold text-(--ui-text)">Profile Settings</h1>
           <div class="flex items-center gap-2">
             <ThemeToggle />
             <UButton
               to="/dashboard"
               variant="ghost"
-              icon="i-heroicons-arrow-left"
+              icon="i-lucide-arrow-left"
             >
               Back to Dashboard
             </UButton>
@@ -225,11 +225,11 @@ async function handlePasswordChange() {
           <div class="space-y-2 text-sm">
             <div>
               <span class="font-medium">Email:</span>
-              <span class="ml-2 text-gray-600 dark:text-gray-400">{{ user?.email }}</span>
+              <span class="ml-2 text-(--ui-text-muted)">{{ user?.email }}</span>
             </div>
             <div>
               <span class="font-medium">Account created:</span>
-              <span class="ml-2 text-gray-600 dark:text-gray-400">
+              <span class="ml-2 text-(--ui-text-muted)">
                 {{ new Date(user?.created).toLocaleDateString() }}
               </span>
             </div>
@@ -255,13 +255,13 @@ async function handlePasswordChange() {
 
             <UAlert
               v-if="nameError"
-              color="red"
+              color="error"
               :title="nameError"
             />
 
             <UAlert
               v-if="nameSuccess"
-              color="green"
+              color="success"
               :title="nameSuccess"
             />
 
@@ -283,7 +283,7 @@ async function handlePasswordChange() {
           </template>
 
           <form @submit.prevent="handleEmailChange" class="space-y-4">
-            <div class="text-sm text-gray-600 mb-4">
+            <div class="text-sm text-(--ui-text-muted) mb-4">
               <p>Current email: <strong>{{ user?.email }}</strong></p>
               <p class="mt-2">A verification link will be sent to your new email address.</p>
             </div>
@@ -312,13 +312,13 @@ async function handlePasswordChange() {
 
             <UAlert
               v-if="emailError"
-              color="red"
+              color="error"
               :title="emailError"
             />
 
             <UAlert
               v-if="emailSuccess"
-              color="green"
+              color="success"
               :title="emailSuccess"
             />
 
@@ -374,7 +374,7 @@ async function handlePasswordChange() {
                   {{ passwordStrength.label }}
                 </span>
               </div>
-              <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div class="h-2 bg-(--ui-bg-accented) rounded-full overflow-hidden">
                 <div
                   class="h-full transition-all duration-300"
                   :class="{
@@ -410,13 +410,13 @@ async function handlePasswordChange() {
 
             <UAlert
               v-if="passwordError"
-              color="red"
+              color="error"
               :title="passwordError"
             />
 
             <UAlert
               v-if="passwordSuccess"
-              color="green"
+              color="success"
               :title="passwordSuccess"
             />
 
@@ -438,12 +438,12 @@ async function handlePasswordChange() {
           </template>
 
           <div class="space-y-4">
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-(--ui-text-muted)">
               Sign out of your account on this device.
             </p>
 
             <UButton
-              color="red"
+              color="error"
               variant="outline"
               size="lg"
               @click="logout"
@@ -457,30 +457,3 @@ async function handlePasswordChange() {
   </div>
 </template>
 
-<style scoped>
-.profile-page {
-  background-color: var(--bg);
-  color: var(--text);
-}
-
-.profile-title {
-  color: var(--text);
-}
-
-/* Profile-specific overrides for Nuxt UI components */
-:deep(button[class*="ghost"]) {
-  color: var(--text) !important;
-}
-
-:deep(button[class*="ghost"]:hover) {
-  background-color: var(--bg-hover) !important;
-}
-
-:deep([class*="Card"]) {
-  border-color: var(--border) !important;
-}
-
-[data-theme="dark"] :deep([class*="Card"]) {
-  background-color: var(--bg-secondary) !important;
-}
-</style>

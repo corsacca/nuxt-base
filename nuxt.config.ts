@@ -32,16 +32,6 @@ export default defineNuxtConfig({
     }
   },
 
-  // Theme configuration
-  colorMode: {
-    preference: 'light',
-    classSuffix: ''
-  },
-
-  ui: {
-    primary: 'gray',
-    gray: 'neutral'
-  },
 
   // Runtime config structure - consuming projects must provide actual values
   runtimeConfig: {

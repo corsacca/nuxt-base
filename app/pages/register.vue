@@ -91,7 +91,7 @@ const redirectToLogin = () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-white px-4 py-12">
+  <div class="min-h-screen flex items-center justify-center bg-(--ui-bg) px-4 py-12">
     <div class="w-full max-w-md">
       <!-- Theme Toggle -->
       <div class="flex justify-end mb-4">
@@ -100,16 +100,16 @@ const redirectToLogin = () => {
 
       <!-- Logo/Header -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-black mb-2">Create Account</h1>
-        <p class="text-gray-600">Join us today</p>
+        <h1 class="text-4xl font-bold text-(--ui-text) mb-2">Create Account</h1>
+        <p class="text-(--ui-text-muted)">Join us today</p>
       </div>
 
       <!-- Register Card -->
-      <UCard class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+      <UCard :ui="{ body: 'p-6 sm:p-8' }">
         <!-- Success Message -->
         <div v-if="success" class="space-y-4">
           <UAlert
-            color="green"
+            color="success"
             variant="soft"
             title="Registration Successful!"
             description="Please check your email to verify your account."
@@ -122,7 +122,7 @@ const redirectToLogin = () => {
           <!-- Error Alert -->
           <UAlert
             v-if="error"
-            color="red"
+            color="error"
             variant="soft"
             :title="error"
             @close="error = ''"
@@ -175,12 +175,12 @@ const redirectToLogin = () => {
               <!-- Password Strength Indicator -->
               <div v-if="state.password" class="mt-2 space-y-1">
                 <div class="flex items-center justify-between text-xs">
-                  <span class="text-gray-600">Password strength:</span>
+                  <span class="text-(--ui-text-muted)">Password strength:</span>
                   <span :class="`font-medium text-${passwordStrength.color}-600`">
                     {{ passwordStrength.label }}
                   </span>
                 </div>
-                <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                <div class="h-1.5 bg-(--ui-bg-accented) rounded-full overflow-hidden">
                   <div
                     :class="`h-full bg-${passwordStrength.color}-500 transition-all duration-300`"
                     :style="{ width: `${passwordStrength.strength}%` }"
@@ -225,10 +225,10 @@ const redirectToLogin = () => {
           <!-- Divider -->
           <div class="relative">
             <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-200"></div>
+              <div class="w-full border-t border-(--ui-border)"></div>
             </div>
             <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-white text-gray-500">Already have an account?</span>
+              <span class="px-2 bg-(--ui-bg) text-(--ui-text-muted)">Already have an account?</span>
             </div>
           </div>
 
@@ -247,7 +247,7 @@ const redirectToLogin = () => {
       </UCard>
 
       <!-- Footer -->
-      <p class="text-center text-sm text-gray-500 mt-8">
+      <p class="text-center text-sm text-(--ui-text-dimmed) mt-8">
         By creating an account, you agree to our Terms of Service and Privacy Policy
       </p>
     </div>

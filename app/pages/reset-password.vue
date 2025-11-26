@@ -66,7 +66,7 @@ async function handleResetPassword() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-white px-4 py-12">
+  <div class="min-h-screen flex items-center justify-center bg-(--ui-bg) px-4 py-12">
     <div class="w-full max-w-md">
       <!-- Theme Toggle -->
       <div class="flex justify-end mb-4">
@@ -75,19 +75,19 @@ async function handleResetPassword() {
 
       <!-- Logo/Header -->
       <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-black mb-2">Reset Password</h1>
-        <p class="text-gray-600">Enter your new password</p>
+        <h1 class="text-4xl font-bold text-(--ui-text) mb-2">Reset Password</h1>
+        <p class="text-(--ui-text-muted)">Enter your new password</p>
       </div>
 
       <!-- Invalid Token View -->
-      <UCard v-if="invalidToken" class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+      <UCard v-if="invalidToken" :ui="{ body: 'p-6 sm:p-8' }">
         <div class="space-y-4">
           <UAlert
-            color="red"
+            color="error"
             variant="soft"
             title="Invalid Reset Link"
           />
-          <p class="text-gray-600">
+          <p class="text-(--ui-text-muted)">
             This password reset link is invalid or has expired. Please request a new password reset.
           </p>
           <UButton
@@ -102,29 +102,29 @@ async function handleResetPassword() {
       </UCard>
 
       <!-- Success View -->
-      <UCard v-else-if="success" class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+      <UCard v-else-if="success" :ui="{ body: 'p-6 sm:p-8' }">
         <div class="space-y-4">
           <UAlert
-            color="green"
+            color="success"
             variant="soft"
             title="Password Reset Successfully!"
           />
-          <p class="text-gray-600">
+          <p class="text-(--ui-text-muted)">
             Your password has been reset. You can now log in with your new password.
           </p>
-          <p class="text-sm text-gray-500">
+          <p class="text-sm text-(--ui-text-dimmed)">
             Redirecting to login page...
           </p>
         </div>
       </UCard>
 
       <!-- Reset Form -->
-      <UCard v-else class="border border-gray-200 shadow-lg" :ui="{ body: 'p-6 sm:p-8' }">
+      <UCard v-else :ui="{ body: 'p-6 sm:p-8' }">
         <form @submit.prevent="handleResetPassword" class="space-y-6">
           <!-- Error Alert -->
           <UAlert
             v-if="error"
-            color="red"
+            color="error"
             variant="soft"
             :title="error"
             @close="error = ''"
@@ -178,7 +178,7 @@ async function handleResetPassword() {
             <button
               type="button"
               @click="router.push('/login')"
-              class="text-sm text-gray-600 hover:text-black transition-colors"
+              class="text-sm text-(--ui-text-muted) hover:text-(--ui-text) transition-colors"
               :disabled="state.loading"
             >
               ← Back to Login
@@ -188,7 +188,7 @@ async function handleResetPassword() {
       </UCard>
 
       <!-- Footer -->
-      <p class="text-center text-sm text-gray-500 mt-8">
+      <p class="text-center text-sm text-(--ui-text-dimmed) mt-8">
         By resetting your password, you agree to our Terms of Service and Privacy Policy
       </p>
     </div>

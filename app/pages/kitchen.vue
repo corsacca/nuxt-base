@@ -1,25 +1,21 @@
 <template>
-  <div class="dashboard-container">
-    <header class="dashboard-header">
-      <div class="header-content">
-        <h1>Kitchen Sink UI Showcase</h1>
-        <div class="header-actions">
-          <span class="user-info">{{ user?.display_name || user?.email }}</span>
-          <NuxtLink to="/profile" class="profile-link">
-            Profile
-          </NuxtLink>
+  <div class="min-h-screen bg-(--ui-bg) text-(--ui-text)">
+    <header class="bg-(--ui-bg-elevated) border-b border-(--ui-border) py-4 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
+        <h1 class="text-xl font-semibold">Kitchen Sink UI Showcase</h1>
+        <div class="flex items-center gap-4">
+          <span class="text-(--ui-text-muted) text-sm">{{ user?.display_name || user?.email }}</span>
+          <UButton to="/profile" variant="outline" size="sm">Profile</UButton>
           <ThemeToggle />
-          <button class="logout-button" @click="handleLogout">
-            Logout
-          </button>
+          <UButton variant="outline" size="sm" @click="handleLogout">Logout</UButton>
         </div>
       </div>
     </header>
 
-    <main class="dashboard-main">
+    <main class="max-w-7xl mx-auto px-4 py-8">
       <!-- Typography Section -->
-      <section class="section">
-        <h2 class="section-title">Typography</h2>
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Typography</h2>
         <UCard>
           <h1>Heading 1 - Main Title</h1>
           <h2>Heading 2 - Section Title</h2>
@@ -35,9 +31,9 @@
       </section>
 
       <!-- Buttons Section -->
-      <section class="section">
-        <h2 class="section-title">Buttons</h2>
-        <div class="dashboard-grid">
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Buttons</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UCard>
             <template #header>
               <h3>Primary Buttons</h3>
@@ -96,8 +92,8 @@
       </section>
 
       <!-- Links Section -->
-      <section class="section">
-        <h2 class="section-title">Links</h2>
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Links</h2>
         <UCard>
           <div class="link-showcase">
             <ULink to="/">Home Link</ULink>
@@ -112,9 +108,9 @@
       </section>
 
       <!-- Cards Section -->
-      <section class="section">
-        <h2 class="section-title">Cards</h2>
-        <div class="dashboard-grid">
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Cards</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UCard>
             <template #header>
               <h3>Simple Card</h3>
@@ -163,9 +159,9 @@
       </section>
 
       <!-- Forms Section -->
-      <section class="section">
-        <h2 class="section-title">Form Elements</h2>
-        <div class="dashboard-grid">
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Form Elements</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <UCard>
             <template #header>
               <h3>Text Inputs</h3>
@@ -218,8 +214,8 @@
       </section>
 
       <!-- Alerts Section -->
-      <section class="section">
-        <h2 class="section-title">Alerts & Notifications</h2>
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Alerts & Notifications</h2>
         <div class="space-y-3">
           <UAlert color="primary" variant="subtle" title="Info" description="This is an informational message." icon="i-lucide-info" />
           <UAlert color="success" variant="subtle" title="Success" description="Operation completed successfully!" icon="i-lucide-check-circle" />
@@ -229,8 +225,8 @@
       </section>
 
       <!-- Badges Section -->
-      <section class="section">
-        <h2 class="section-title">Badges & Tags</h2>
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Badges & Tags</h2>
         <UCard>
           <div class="badge-showcase">
             <UBadge color="neutral" variant="solid" label="Default" />
@@ -245,9 +241,9 @@
       </section>
 
       <!-- Lists Section -->
-      <section class="section">
-        <h2 class="section-title">Lists</h2>
-        <div class="dashboard-grid">
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Lists</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UCard>
             <template #header>
               <h3>Unordered List</h3>
@@ -285,16 +281,16 @@
       </section>
 
       <!-- Table Section -->
-      <section class="section">
-        <h2 class="section-title">Table</h2>
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Table</h2>
         <UCard>
           <UTable :columns="tableColumns" :data="tableRows" />
         </UCard>
       </section>
 
       <!-- Code Block Section -->
-      <section class="section">
-        <h2 class="section-title">Code Blocks</h2>
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Code Blocks</h2>
         <UCard>
           <template #header>
             <h3>Code Example</h3>
@@ -310,8 +306,8 @@ greet('World');</code></pre>
       </section>
 
       <!-- Dividers & Spacing -->
-      <section class="section">
-        <h2 class="section-title">Dividers & Spacing</h2>
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Dividers & Spacing</h2>
         <UCard>
           <p>Content above divider</p>
           <USeparator />
@@ -322,9 +318,9 @@ greet('World');</code></pre>
       </section>
 
       <!-- Loading States -->
-      <section class="section">
-        <h2 class="section-title">Loading States</h2>
-        <div class="dashboard-grid">
+      <section class="mb-12">
+        <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Loading States</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <UCard>
             <template #header>
               <h3>Loading Buttons</h3>
@@ -408,167 +404,28 @@ const tableRows = [
 </script>
 
 <style scoped>
-.dashboard-container {
-  min-height: 100vh;
-  background: var(--bg);
-  color: var(--text);
-}
-
-.dashboard-header {
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  padding: 1rem 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-content h1 {
-  margin: 0;
-  color: var(--text);
-  font-size: 1.5rem;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.user-info {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.profile-link {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  text-decoration: none;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-
-.profile-link:hover {
-  background: var(--bg-hover);
-}
-
-
-.logout-button:hover {
-  background: var(--bg-hover);
-}
-
-.dashboard-main {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
-}
-
-/* Section Styles */
-.section {
-  margin-bottom: 3rem;
-}
-
-.section-title {
-  font-size: 1.75rem;
-  color: var(--text);
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--border);
-}
-
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-/* Typography Styles */
-:deep(h1), :deep(h2), :deep(h3), :deep(h4), :deep(h5), :deep(h6) {
-  color: var(--text);
-  margin-top: 0;
-}
-
-:deep(h1) { font-size: 2.5rem; margin-bottom: 1rem; }
-:deep(h2) { font-size: 2rem; margin-bottom: 0.875rem; }
-:deep(h3) { font-size: 1.5rem; margin-bottom: 0.75rem; }
-:deep(h4) { font-size: 1.25rem; margin-bottom: 0.625rem; }
-:deep(h5) { font-size: 1.125rem; margin-bottom: 0.5rem; }
-:deep(h6) { font-size: 1rem; margin-bottom: 0.5rem; }
-
-:deep(p) {
-  color: var(--text);
-  line-height: 1.6;
-  margin: 0.5rem 0;
-}
-
-.text-muted, :deep(.text-muted) {
-  color: var(--text-muted);
-}
-
-:deep(blockquote) {
-  border-left: 4px solid var(--border);
-  padding-left: 1rem;
-  margin: 1rem 0;
-  color: var(--text-muted);
-  font-style: italic;
-}
-
-:deep(code) {
-  background: var(--bg-secondary);
-  color: var(--text);
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
-  font-family: 'Monaco', 'Courier New', monospace;
-  font-size: 0.875rem;
-}
-
-:deep(pre) {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 1rem;
-  overflow-x: auto;
-  margin: 1rem 0;
-}
-
-:deep(pre code) {
-  background: none;
-  padding: 0;
-}
-
-/* Button Styles */
+/* Button grid for showcasing buttons */
 .button-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-/* Link Styles */
+/* Link showcase layout */
 .link-showcase {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-/* Card Styles */
+/* Card footer layout */
 .card-footer {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
 }
 
+/* Stats grid */
 .stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -580,18 +437,18 @@ const tableRows = [
 }
 
 .stat-value {
-  font-size: 2rem;
+  font-size: 1.875rem;
   font-weight: bold;
-  color: var(--text);
+  color: var(--ui-text);
   margin-bottom: 0.25rem;
 }
 
 .stat-label {
   font-size: 0.875rem;
-  color: var(--text-muted);
+  color: var(--ui-text-muted);
 }
 
-/* Form Styles */
+/* Form group spacing */
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -603,81 +460,19 @@ const tableRows = [
 .form-group label {
   display: block;
   margin-bottom: 0.5rem;
-  color: var(--text);
+  color: var(--ui-text);
   font-weight: 500;
 }
 
-
-/* Badge Styles */
+/* Badge showcase layout */
 .badge-showcase {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-/* List Styles */
-:deep(ul), :deep(ol) {
-  color: var(--text);
-  line-height: 1.8;
-  padding-left: 1.5rem;
-}
-
-:deep(li) {
-  margin-bottom: 0.5rem;
-}
-
-:deep(ul ul), :deep(ol ol) {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-
-
-/* Loading Styles - handled by Nuxt UI components */
-
-/* Nuxt UI Card overrides for dashboard */
-:deep([class*="Card"]) {
-  border-color: var(--border) !important;
-}
-
-[data-theme="dark"] :deep([class*="Card"]) {
-  background-color: var(--bg-secondary) !important;
-}
-
-/* Ensure proper spacing */
-.space-y-3 > * {
-  margin-bottom: 0.75rem;
-}
-
-.space-y-3 > *:last-child {
-  margin-bottom: 0;
-}
-
-/* Responsive Design */
+/* Responsive stats */
 @media (max-width: 768px) {
-  .header-content {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-
-  .header-content h1 {
-    font-size: 1.25rem;
-  }
-
-  .header-actions {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-title {
-    font-size: 1.5rem;
-  }
-
   .stats {
     grid-template-columns: 1fr;
   }
@@ -685,6 +480,5 @@ const tableRows = [
   .button-grid {
     flex-direction: column;
   }
-
 }
 </style>
