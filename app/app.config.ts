@@ -2,17 +2,12 @@ export default defineAppConfig({
   ui: {
     colors: {
       primary: 'green',
-      neutral: 'zinc'
+      // secondary: 'brand-slate',
+      // success: 'brand-success',
+      // warning: 'brand-warning',
+      // error: 'brand-error',
+      // info: 'brand-info',
+      // neutral: 'brand-slate'
     }
   }
 })
-
-
-// Grays:
-//   - slate, gray, zinc, neutral, stone
-//
-// Colors:
-//   - red, orange, amber, yellow
-//   - lime, green, emerald, teal
-//   - cyan, sky, blue, indigo
-//   - violet, purple, fuchsia, pink, rose

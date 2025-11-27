@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: false
+  layout: 'auth'
 })
 
 const router = useRouter()
@@ -66,20 +66,14 @@ async function handleResetPassword() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-(--ui-bg) px-4 py-12">
-    <div class="w-full max-w-md">
-      <!-- Theme Toggle -->
-      <div class="flex justify-end mb-4">
-        <ThemeToggle />
-      </div>
+  <div>
+    <!-- Logo/Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-(--ui-text) mb-2">Reset Password</h1>
+      <p class="text-(--ui-text-muted)">Enter your new password</p>
+    </div>
 
-      <!-- Logo/Header -->
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-(--ui-text) mb-2">Reset Password</h1>
-        <p class="text-(--ui-text-muted)">Enter your new password</p>
-      </div>
-
-      <!-- Invalid Token View -->
+    <!-- Invalid Token View -->
       <UCard v-if="invalidToken" :ui="{ body: 'p-6 sm:p-8' }">
         <div class="space-y-4">
           <UAlert
@@ -185,13 +179,12 @@ async function handleResetPassword() {
             </button>
           </div>
         </form>
-      </UCard>
+    </UCard>
 
-      <!-- Footer -->
-      <p class="text-center text-sm text-(--ui-text-dimmed) mt-8">
-        By resetting your password, you agree to our Terms of Service and Privacy Policy
-      </p>
-    </div>
+    <!-- Footer -->
+    <p class="text-center text-sm text-(--ui-text-dimmed) mt-8">
+      By resetting your password, you agree to our Terms of Service and Privacy Policy
+    </p>
   </div>
 </template>
 

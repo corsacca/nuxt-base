@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: false
+  layout: 'auth'
 })
 
 const router = useRouter()
@@ -98,15 +98,9 @@ function switchToReset() {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-(--ui-bg) px-4 py-12">
-    <div class="w-full max-w-md">
-      <!-- Theme Toggle -->
-      <div class="flex justify-end mb-4">
-        <ThemeToggle />
-      </div>
-
-      <!-- Logo/Header -->
-      <div class="text-center mb-8">
+  <div>
+    <!-- Logo/Header -->
+    <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-(--ui-text) mb-2">
           {{ view === 'login' ? 'Welcome Back' : 'Reset Password' }}
         </h1>
@@ -290,11 +284,10 @@ function switchToReset() {
         </form>
       </UCard>
 
-      <!-- Footer -->
-      <p class="text-center text-sm text-(--ui-text-dimmed) mt-8">
-        By signing in, you agree to our Terms of Service and Privacy Policy
-      </p>
-    </div>
+    <!-- Footer -->
+    <p class="text-center text-sm text-(--ui-text-dimmed) mt-8">
+      By signing in, you agree to our Terms of Service and Privacy Policy
+    </p>
   </div>
 </template>
 

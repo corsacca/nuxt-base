@@ -104,7 +104,7 @@ async function handleNameUpdate() {
   nameLoading.value = true
 
   try {
-    const response = await $fetch('/api/profile/name', {
+    await $fetch('/api/profile/name', {
       method: 'PATCH',
       body: {
         display_name: nameState.display_name.trim()
@@ -198,262 +198,190 @@ async function handlePasswordChange() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-(--ui-bg)">
-    <div class="container mx-auto px-4 py-8">
-      <div class="max-w-2xl mx-auto space-y-6">
-        <!-- Header -->
-        <div class="flex items-center justify-between">
-          <h1 class="text-3xl font-bold text-(--ui-text)">Profile Settings</h1>
-          <div class="flex items-center gap-2">
-            <ThemeToggle />
-            <UButton
-              to="/dashboard"
-              variant="ghost"
-              icon="i-lucide-arrow-left"
-            >
-              Back to Dashboard
-            </UButton>
+  <div class="max-w-2xl mx-auto space-y-6">
+    <h1 class="text-3xl font-bold">Profile Settings</h1>
+
+    <!-- Account Info -->
+    <UCard>
+      <template #header>
+        <h2 class="text-xl font-semibold">Account Information</h2>
+      </template>
+      <div class="space-y-2 text-sm">
+        <div>
+          <span class="font-medium">Email:</span>
+          <span class="ml-2 text-(--ui-text-muted)">{{ user?.email }}</span>
+        </div>
+        <div>
+          <span class="font-medium">Account created:</span>
+          <span class="ml-2 text-(--ui-text-muted)">
+            {{ new Date(user?.created).toLocaleDateString() }}
+          </span>
+        </div>
+      </div>
+    </UCard>
+
+    <!-- Change Display Name -->
+    <UCard>
+      <template #header>
+        <h2 class="text-xl font-semibold">Change Display Name</h2>
+      </template>
+      <form @submit.prevent="handleNameUpdate" class="space-y-4">
+        <UFormField label="Display Name">
+          <UInput
+            v-model="nameState.display_name"
+            type="text"
+            size="lg"
+            :disabled="nameLoading"
+            placeholder="Enter your display name"
+          />
+        </UFormField>
+        <UAlert v-if="nameError" color="error" :title="nameError" />
+        <UAlert v-if="nameSuccess" color="success" :title="nameSuccess" />
+        <UButton
+          type="submit"
+          size="lg"
+          :loading="nameLoading"
+          :disabled="!nameState.display_name.trim() || nameLoading"
+        >
+          Update Name
+        </UButton>
+      </form>
+    </UCard>
+
+    <!-- Change Email -->
+    <UCard>
+      <template #header>
+        <h2 class="text-xl font-semibold">Change Email Address</h2>
+      </template>
+      <form @submit.prevent="handleEmailChange" class="space-y-4">
+        <div class="text-sm text-(--ui-text-muted) mb-4">
+          <p>Current email: <strong>{{ user?.email }}</strong></p>
+          <p class="mt-2">A verification link will be sent to your new email address.</p>
+        </div>
+        <UFormField label="New Email Address">
+          <UInput
+            v-model="emailState.new_email"
+            type="email"
+            size="lg"
+            :disabled="emailLoading"
+            placeholder="Enter new email address"
+            autocomplete="email"
+          />
+        </UFormField>
+        <UFormField label="Current Password">
+          <UInput
+            v-model="emailState.current_password"
+            type="password"
+            size="lg"
+            :disabled="emailLoading"
+            placeholder="Enter your current password"
+            autocomplete="current-password"
+          />
+        </UFormField>
+        <UAlert v-if="emailError" color="error" :title="emailError" />
+        <UAlert v-if="emailSuccess" color="success" :title="emailSuccess" />
+        <UButton
+          type="submit"
+          size="lg"
+          :loading="emailLoading"
+          :disabled="!canSubmitEmail"
+        >
+          Send Verification Email
+        </UButton>
+      </form>
+    </UCard>
+
+    <!-- Change Password -->
+    <UCard>
+      <template #header>
+        <h2 class="text-xl font-semibold">Change Password</h2>
+      </template>
+      <form @submit.prevent="handlePasswordChange" class="space-y-4">
+        <UFormField label="Current Password">
+          <UInput
+            v-model="passwordState.current_password"
+            type="password"
+            size="lg"
+            :disabled="passwordLoading"
+            placeholder="Enter current password"
+            autocomplete="current-password"
+          />
+        </UFormField>
+        <UFormField label="New Password">
+          <UInput
+            v-model="passwordState.new_password"
+            type="password"
+            size="lg"
+            :disabled="passwordLoading"
+            placeholder="Enter new password (min 8 characters)"
+            autocomplete="new-password"
+          />
+        </UFormField>
+        <!-- Password Strength Indicator -->
+        <div v-if="passwordState.new_password" class="space-y-2">
+          <div class="flex justify-between text-sm">
+            <span>Password Strength:</span>
+            <span :class="{
+              'text-red-600': passwordStrength.color === 'red',
+              'text-yellow-600': passwordStrength.color === 'yellow',
+              'text-green-600': passwordStrength.color === 'green'
+            }">
+              {{ passwordStrength.label }}
+            </span>
+          </div>
+          <div class="h-2 bg-(--ui-bg-accented) rounded-full overflow-hidden">
+            <div
+              class="h-full transition-all duration-300"
+              :class="{
+                'bg-red-500': passwordStrength.color === 'red',
+                'bg-yellow-500': passwordStrength.color === 'yellow',
+                'bg-green-500': passwordStrength.color === 'green'
+              }"
+              :style="{ width: passwordStrength.strength + '%' }"
+            />
           </div>
         </div>
+        <UFormField label="Confirm New Password">
+          <UInput
+            v-model="passwordState.confirm_password"
+            type="password"
+            size="lg"
+            :disabled="passwordLoading"
+            placeholder="Confirm new password"
+            autocomplete="new-password"
+          />
+        </UFormField>
+        <!-- Password Match Indicator -->
+        <div v-if="passwordState.confirm_password" class="text-sm">
+          <span v-if="passwordMatch" class="text-green-600">Passwords match</span>
+          <span v-else class="text-red-600">Passwords do not match</span>
+        </div>
+        <UAlert v-if="passwordError" color="error" :title="passwordError" />
+        <UAlert v-if="passwordSuccess" color="success" :title="passwordSuccess" />
+        <UButton
+          type="submit"
+          size="lg"
+          :loading="passwordLoading"
+          :disabled="!canSubmitPassword"
+        >
+          Change Password
+        </UButton>
+      </form>
+    </UCard>
 
-        <!-- Account Info -->
-        <UCard>
-          <template #header>
-            <h2 class="text-xl font-semibold">Account Information</h2>
-          </template>
-
-          <div class="space-y-2 text-sm">
-            <div>
-              <span class="font-medium">Email:</span>
-              <span class="ml-2 text-(--ui-text-muted)">{{ user?.email }}</span>
-            </div>
-            <div>
-              <span class="font-medium">Account created:</span>
-              <span class="ml-2 text-(--ui-text-muted)">
-                {{ new Date(user?.created).toLocaleDateString() }}
-              </span>
-            </div>
-          </div>
-        </UCard>
-
-        <!-- Change Display Name -->
-        <UCard>
-          <template #header>
-            <h2 class="text-xl font-semibold">Change Display Name</h2>
-          </template>
-
-          <form @submit.prevent="handleNameUpdate" class="space-y-4">
-            <UFormField label="Display Name">
-              <UInput
-                v-model="nameState.display_name"
-                type="text"
-                size="lg"
-                :disabled="nameLoading"
-                placeholder="Enter your display name"
-              />
-            </UFormField>
-
-            <UAlert
-              v-if="nameError"
-              color="error"
-              :title="nameError"
-            />
-
-            <UAlert
-              v-if="nameSuccess"
-              color="success"
-              :title="nameSuccess"
-            />
-
-            <UButton
-              type="submit"
-              size="lg"
-              :loading="nameLoading"
-              :disabled="!nameState.display_name.trim() || nameLoading"
-            >
-              Update Name
-            </UButton>
-          </form>
-        </UCard>
-
-        <!-- Change Email -->
-        <UCard>
-          <template #header>
-            <h2 class="text-xl font-semibold">Change Email Address</h2>
-          </template>
-
-          <form @submit.prevent="handleEmailChange" class="space-y-4">
-            <div class="text-sm text-(--ui-text-muted) mb-4">
-              <p>Current email: <strong>{{ user?.email }}</strong></p>
-              <p class="mt-2">A verification link will be sent to your new email address.</p>
-            </div>
-
-            <UFormField label="New Email Address">
-              <UInput
-                v-model="emailState.new_email"
-                type="email"
-                size="lg"
-                :disabled="emailLoading"
-                placeholder="Enter new email address"
-                autocomplete="email"
-              />
-            </UFormField>
-
-            <UFormField label="Current Password">
-              <UInput
-                v-model="emailState.current_password"
-                type="password"
-                size="lg"
-                :disabled="emailLoading"
-                placeholder="Enter your current password"
-                autocomplete="current-password"
-              />
-            </UFormField>
-
-            <UAlert
-              v-if="emailError"
-              color="error"
-              :title="emailError"
-            />
-
-            <UAlert
-              v-if="emailSuccess"
-              color="success"
-              :title="emailSuccess"
-            />
-
-            <UButton
-              type="submit"
-              size="lg"
-              :loading="emailLoading"
-              :disabled="!canSubmitEmail"
-            >
-              Send Verification Email
-            </UButton>
-          </form>
-        </UCard>
-
-        <!-- Change Password -->
-        <UCard>
-          <template #header>
-            <h2 class="text-xl font-semibold">Change Password</h2>
-          </template>
-
-          <form @submit.prevent="handlePasswordChange" class="space-y-4">
-            <UFormField label="Current Password">
-              <UInput
-                v-model="passwordState.current_password"
-                type="password"
-                size="lg"
-                :disabled="passwordLoading"
-                placeholder="Enter current password"
-                autocomplete="current-password"
-              />
-            </UFormField>
-
-            <UFormField label="New Password">
-              <UInput
-                v-model="passwordState.new_password"
-                type="password"
-                size="lg"
-                :disabled="passwordLoading"
-                placeholder="Enter new password (min 8 characters)"
-                autocomplete="new-password"
-              />
-            </UFormField>
-
-            <!-- Password Strength Indicator -->
-            <div v-if="passwordState.new_password" class="space-y-2">
-              <div class="flex justify-between text-sm">
-                <span>Password Strength:</span>
-                <span :class="{
-                  'text-red-600': passwordStrength.color === 'red',
-                  'text-yellow-600': passwordStrength.color === 'yellow',
-                  'text-green-600': passwordStrength.color === 'green'
-                }">
-                  {{ passwordStrength.label }}
-                </span>
-              </div>
-              <div class="h-2 bg-(--ui-bg-accented) rounded-full overflow-hidden">
-                <div
-                  class="h-full transition-all duration-300"
-                  :class="{
-                    'bg-red-500': passwordStrength.color === 'red',
-                    'bg-yellow-500': passwordStrength.color === 'yellow',
-                    'bg-green-500': passwordStrength.color === 'green'
-                  }"
-                  :style="{ width: passwordStrength.strength + '%' }"
-                ></div>
-              </div>
-            </div>
-
-            <UFormField label="Confirm New Password">
-              <UInput
-                v-model="passwordState.confirm_password"
-                type="password"
-                size="lg"
-                :disabled="passwordLoading"
-                placeholder="Confirm new password"
-                autocomplete="new-password"
-              />
-            </UFormField>
-
-            <!-- Password Match Indicator -->
-            <div v-if="passwordState.confirm_password" class="text-sm">
-              <span v-if="passwordMatch" class="text-green-600">
-                ✓ Passwords match
-              </span>
-              <span v-else class="text-red-600">
-                ✗ Passwords do not match
-              </span>
-            </div>
-
-            <UAlert
-              v-if="passwordError"
-              color="error"
-              :title="passwordError"
-            />
-
-            <UAlert
-              v-if="passwordSuccess"
-              color="success"
-              :title="passwordSuccess"
-            />
-
-            <UButton
-              type="submit"
-              size="lg"
-              :loading="passwordLoading"
-              :disabled="!canSubmitPassword"
-            >
-              Change Password
-            </UButton>
-          </form>
-        </UCard>
-
-        <!-- Sign Out -->
-        <UCard>
-          <template #header>
-            <h2 class="text-xl font-semibold">Sign Out</h2>
-          </template>
-
-          <div class="space-y-4">
-            <p class="text-sm text-(--ui-text-muted)">
-              Sign out of your account on this device.
-            </p>
-
-            <UButton
-              color="error"
-              variant="outline"
-              size="lg"
-              @click="logout"
-            >
-              Sign Out
-            </UButton>
-          </div>
-        </UCard>
+    <!-- Sign Out -->
+    <UCard>
+      <template #header>
+        <h2 class="text-xl font-semibold">Sign Out</h2>
+      </template>
+      <div class="space-y-4">
+        <p class="text-sm text-(--ui-text-muted)">
+          Sign out of your account on this device.
+        </p>
+        <UButton color="error" variant="outline" size="lg" @click="logout">
+          Sign Out
+        </UButton>
       </div>
-    </div>
+    </UCard>
   </div>
 </template>
-

@@ -14,6 +14,13 @@ export default defineNuxtConfig({
   // Modules included in the layer
   modules: ['@nuxt/ui'],
 
+  // UI theme configuration - register custom colors
+  ui: {
+    theme: {
+      colors: ['primary', 'secondary', 'info', 'success', 'warning', 'error', 'neutral', 'kashmir-blue', 'brand-slate', 'brand-success', 'brand-warning', 'brand-error', 'brand-info']
+    }
+  },
+
   // Default to SPA mode (can be overridden by consuming projects)
   ssr: false,
 
