@@ -139,6 +139,18 @@ export class MigrationRunner {
       }
     }
 
+    // If still not found, try bundled base-migrations (for Vercel/serverless)
+    if (baseMigrations.length === 0) {
+      const bundledBaseDir = join(cwdDir, 'base-migrations')
+      console.log('🔍 Checking for bundled base migrations in:', bundledBaseDir)
+      const migrations = await this.loadMigrationsFromDir(bundledBaseDir, 'base')
+      if (migrations.length > 0) {
+        baseLayerDir = bundledBaseDir
+        baseMigrations = migrations
+        console.log(`✅ Loaded ${baseMigrations.length} base migration(s) from ${baseLayerDir}`)
+      }
+    }
+
     if (baseMigrations.length === 0) {
       console.log('⚠️  No base layer migrations found')
     }
