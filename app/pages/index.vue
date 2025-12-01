@@ -40,6 +40,10 @@
 </template>
 
 <script setup>
+definePageMeta({
+  layout: false
+})
+
 const { isLoggedIn, checkAuth } = useAuth()
 const router = useRouter()
 

@@ -67,6 +67,7 @@ export default defineNuxtConfig({
 
     // Public keys (exposed to the frontend)
     public: {
+      appName: appTitle,
       nodeEnv: process.env.NODE_ENV || '',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || ''
     }

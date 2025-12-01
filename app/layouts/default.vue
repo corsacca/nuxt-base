@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { user } = useAuth()
+const config = useRuntimeConfig()
 </script>
 
 <template>
@@ -8,8 +9,8 @@ const { user } = useAuth()
       <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
         <div class="flex items-center gap-4">
           <slot name="header-left">
-            <NuxtLink to="/dashboard" class="text-xl font-semibold hover:text-(--ui-text-muted) transition-colors">
-              Dashboard
+            <NuxtLink to="/" class="text-xl font-semibold hover:text-(--ui-text-muted) transition-colors">
+              {{ config.public.appName }}
             </NuxtLink>
           </slot>
         </div>
