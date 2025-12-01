@@ -6,8 +6,9 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "build": "nuxt build",
-    "dev": "nuxt dev",
+    "migrate": "node scripts/migrate.mjs",
+    "build": "npm run migrate && nuxt build",
+    "dev": "npm run migrate && nuxt dev",
     "dev:mail": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
