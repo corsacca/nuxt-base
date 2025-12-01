@@ -1,7 +1,18 @@
 @import "tailwindcss" theme(static);
 @import "@nuxt/ui";
 
-/*@theme static {*/
+/* Force generation of UI CSS variable utilities (needed for Nuxt layers) */
+@source inline("{hover:,}text-(--ui-text)");
+@source inline("{hover:,}text-(--ui-text-muted)");
+@source inline("{hover:,}text-(--ui-text-dimmed)");
+@source inline("{hover:,}text-(--ui-text-toned)");
+@source inline("{hover:,}text-(--ui-text-highlighted)");
+@source inline("{hover:,}text-(--ui-text-inverted)");
+@source inline("bg-(--ui-bg)");
+@source inline("border-(--ui-border)");
+
+
+/* theme static {*/
 /*  !* Primary: Kashmir Blue - base #3f729b *!*/
 /*  --color-kashmir-blue-50: #f0f5fa;*/
 /*  --color-kashmir-blue-100: #e0ebf4;*/
