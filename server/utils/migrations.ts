@@ -143,11 +143,32 @@ export class MigrationRunner {
       console.log('⚠️  No base layer migrations found')
     }
 
-    // Load project migrations (from the consuming project's migrations directory)
-    const projectDir = join(cwdDir, 'migrations')
-    console.log('🔍 Looking for project migrations in:', projectDir)
-    const projectMigrations = await this.loadMigrationsFromDir(projectDir, 'project')
-    console.log(`✅ Loaded ${projectMigrations.length} project migration(s)`)
+    // Load project migrations
+    // Check multiple possible locations for serverless/Vercel compatibility
+    const projectMigrationPaths = [
+      // Standard local development path
+      join(cwdDir, 'migrations'),
+      // Nitro serverAssets path (for Vercel/serverless deployments)
+      join(cwdDir, '.output/server/assets/migrations'),
+      // Alternative Nitro output paths
+      join(cwdDir, 'assets/migrations'),
+      join(cwdDir, 'server/assets/migrations'),
+    ]
+
+    let projectMigrations: NamespacedMigration[] = []
+    for (const projectDir of projectMigrationPaths) {
+      console.log('🔍 Looking for project migrations in:', projectDir)
+      const migrations = await this.loadMigrationsFromDir(projectDir, 'project')
+      if (migrations.length > 0) {
+        projectMigrations = migrations
+        console.log(`✅ Loaded ${projectMigrations.length} project migration(s) from ${projectDir}`)
+        break
+      }
+    }
+
+    if (projectMigrations.length === 0) {
+      console.log('📝 No project migrations directory found')
+    }
 
     // Combine: base migrations first (sorted by ID), then project migrations (sorted by ID)
     // This ensures base:001, base:002, base:003, project:001, project:002
