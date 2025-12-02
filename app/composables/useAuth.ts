@@ -1,6 +1,44 @@
+const CACHE_KEY = 'auth.user.cache'
+
+// SessionStorage helpers (only run on client)
+const saveToCache = (userData: any) => {
+  if (import.meta.client && userData) {
+    try {
+      sessionStorage.setItem(CACHE_KEY, JSON.stringify(userData))
+    } catch {}
+  }
+}
+
+const loadFromCache = (): any => {
+  if (import.meta.client) {
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY)
+      return cached ? JSON.parse(cached) : null
+    } catch {}
+  }
+  return null
+}
+
+const clearCache = () => {
+  if (import.meta.client) {
+    try {
+      sessionStorage.removeItem(CACHE_KEY)
+    } catch {}
+  }
+}
+
 export const useAuth = () => {
   const user = useState('auth.user', () => null as any)
-  
+  const authReady = useState('auth.ready', () => false)
+
+  // Restore from cache instantly (called by plugin)
+  const restoreFromCache = () => {
+    const cached = loadFromCache()
+    if (cached) {
+      user.value = cached
+    }
+  }
+
   const login = async (email: string, password: string) => {
     try {
       const response = await $fetch('/api/auth/login', {
@@ -10,7 +48,8 @@ export const useAuth = () => {
       
       if (response.success) {
         user.value = response.user
-        
+        saveToCache(response.user)
+
         // Check for redirect parameter in URL
         const route = useRoute()
         const redirectTo = route.query.redirect as string
@@ -38,10 +77,12 @@ export const useAuth = () => {
     try {
       await $fetch('/api/auth/logout', { method: 'POST' })
       user.value = null
+      clearCache()
       await navigateTo('/login')
     } catch {
       // Even if the server request fails, clear local state
       user.value = null
+      clearCache()
       await navigateTo('/login')
     }
   }
@@ -66,9 +107,11 @@ export const useAuth = () => {
     try {
       const response = await $fetch('/api/auth/me') as { user: any }
       user.value = response.user
+      saveToCache(response.user)
       return response.user
     } catch {
       user.value = null
+      clearCache()
       return null
     }
   }
@@ -77,10 +120,13 @@ export const useAuth = () => {
 
   return {
     user: readonly(user),
+    authReady: readonly(authReady),
     login,
     logout,
     register,
     checkAuth,
-    isLoggedIn
+    restoreFromCache,
+    isLoggedIn,
+    setAuthReady: (value: boolean) => { authReady.value = value }
   }
 } 
