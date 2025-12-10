@@ -887,13 +887,13 @@ No additional configuration needed. Vercel runs `npm run build`, which includes 
 The base layer uses these nuxt.config settings:
 
 ```typescript
-{
+export default defineNuxtConfig({
   ssr: false,  // SPA mode by default
   modules: ['@nuxt/ui'],
   css: ['~/assets/css/default.css'],
   devtools: { enabled: true },
   compatibilityDate: '2025-07-15'
-}
+})
 ```
 
 Consuming projects can override any of these settings.
