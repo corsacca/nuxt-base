@@ -567,6 +567,41 @@ await logUpdate('orders', orderId, event)
 await logDelete('orders', orderId, event)
 ```
 
+### Rate Limiting (`server/utils/rate-limit.ts`)
+
+Database-backed rate limiting for authentication endpoints. Queries `activity_logs` to count recent attempts.
+
+```typescript
+import { checkRateLimit, logRateLimitExceeded } from '../utils/rate-limit'
+
+// Check if request is allowed
+const rateCheck = await checkRateLimit(
+  'LOGIN_FAILED',    // eventType to count
+  'email',           // metadata field to match
+  email,             // identifier value
+  15 * 60 * 1000,    // window (15 minutes)
+  5                  // max attempts
+)
+
+if (!rateCheck.allowed) {
+  logRateLimitExceeded(email, '/api/auth/login', userAgent)
+  throw createError({
+    statusCode: 429,
+    statusMessage: `Try again in ${rateCheck.retryAfterSeconds} seconds`
+  })
+}
+```
+
+**Protected Endpoints:**
+
+| Endpoint | Identifier | Window | Max Attempts |
+|----------|------------|--------|--------------|
+| `/api/auth/login` | email | 15 min | 5 |
+| `/api/auth/register` | IP address | 15 min | 10 |
+| `/api/auth/forgot-password` | email | 15 min | 3 |
+
+**Note:** Rate limiting adds one COUNT query per request (~30-80ms on cloud databases). For DDoS and IP-based protection, use infrastructure-level solutions like Cloudflare.
+
 ---
 
 ## Database Schema

@@ -1,4 +1,9 @@
 import crypto from 'crypto'
+import { sql } from '../../utils/database'
+import { logPasswordResetRequest } from '../../utils/activity-logger'
+import { sendTemplateEmail } from '../../utils/email'
+import { checkRateLimit, logRateLimitExceeded } from '../../utils/rate-limit'
+import { useRuntimeConfig, readBody, createError, getHeader } from '#imports'
 
 export default defineEventHandler(async (event) => {
   const { email } = await readBody(event)
@@ -19,6 +24,19 @@ export default defineEventHandler(async (event) => {
     success: true,
     message: 'If an account with that email exists, password reset instructions have been sent.'
   }
+
+  // Check rate limit by email
+  const userAgent = getHeader(event, 'user-agent') || undefined
+  const rateCheck = await checkRateLimit('PASSWORD_RESET_REQUEST', 'email', email, 15 * 60 * 1000, 3)
+
+  if (!rateCheck.allowed) {
+    logRateLimitExceeded(email, '/api/auth/forgot-password', userAgent)
+    // Still return success to prevent enumeration
+    return successResponse
+  }
+
+  // Log this password reset request
+  logPasswordResetRequest(email, userAgent)
 
   try {
     // Check if user exists

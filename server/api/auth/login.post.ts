@@ -1,5 +1,9 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { sql } from '../../utils/database'
+import { logLoginFailed, logLogin } from '../../utils/activity-logger'
+import { checkRateLimit, logRateLimitExceeded } from '../../utils/rate-limit'
+import { useRuntimeConfig, readBody, createError, getHeader, setResponseHeader, setCookie } from '#imports'
 
 export default defineEventHandler(async (event) => {
   const { email, password } = await readBody(event)
@@ -8,13 +12,25 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Email and password are required' })
   }
 
+  // Check rate limit before processing login
+  const userAgent = getHeader(event, 'user-agent') || undefined
+  const rateCheck = await checkRateLimit('LOGIN_FAILED', 'email', email, 15 * 60 * 1000, 5)
+
+  if (!rateCheck.allowed) {
+    logRateLimitExceeded(email, '/api/auth/login', userAgent)
+    setResponseHeader(event, 'Retry-After', rateCheck.retryAfterSeconds!)
+    throw createError({
+      statusCode: 429,
+      statusMessage: `Too many login attempts. Try again in ${Math.ceil(rateCheck.retryAfterSeconds! / 60)} minutes.`
+    })
+  }
+
   // Query existing user from database
   const users = await sql`
     SELECT * FROM users WHERE email = ${email}
   `
 
   const user = users[0]
-  const userAgent = getHeader(event, 'user-agent') || undefined
 
   if (!user) {
     logLoginFailed(email, userAgent, { reason: 'user_not_found' })
