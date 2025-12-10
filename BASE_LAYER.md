@@ -12,18 +12,26 @@ Edit `nuxt.config.ts`:
 
 ```typescript
 export default defineNuxtConfig({
-  extends: ['../base'],  // Adjust path to layer location
+  extends: ['github:corsacca/nuxt-base#master'],  // Or use a specific tag like #v1.2.0
 
   // Override SSR if needed (layer defaults to false)
   ssr: true,
 
-  // Deployment configuration
-  nitro: {
-    preset: 'vercel'
+  // App head configuration
+  app: {
+    head: {
+      title: process.env.APP_TITLE || 'My App',
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }
+      ]
+    }
   },
 
   // Runtime configuration
   runtimeConfig: {
+    appName: process.env.APP_TITLE,
     jwtSecret: process.env.JWT_SECRET,
     databaseUrl: process.env.DATABASE_URL,
     smtpHost: process.env.SMTP_HOST,
@@ -39,6 +47,7 @@ export default defineNuxtConfig({
     s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
     s3BucketName: process.env.S3_BUCKET_NAME,
     public: {
+      appName: process.env.APP_TITLE,
       nodeEnv: process.env.NODE_ENV || 'development',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     }
