@@ -163,6 +163,221 @@ Button component for toggling light/dark mode. No props required.
 
 ---
 
+## UI Components (Nuxt UI)
+
+**Always use Nuxt UI components** instead of plain HTML elements. This ensures consistent theming and automatic light/dark mode support.
+
+### Common Components
+
+| Component | Use Instead Of | Example |
+|-----------|---------------|---------|
+| `<UButton>` | `<button>` | `<UButton>Submit</UButton>` |
+| `<UInput>` | `<input>` | `<UInput v-model="email" type="email" />` |
+| `<UTextarea>` | `<textarea>` | `<UTextarea v-model="message" />` |
+| `<USelect>` | `<select>` | `<USelect v-model="choice" :options="options" />` |
+| `<UCheckbox>` | `<input type="checkbox">` | `<UCheckbox v-model="agreed" label="I agree" />` |
+| `<UCard>` | `<div class="card">` | `<UCard><p>Content</p></UCard>` |
+| `<UModal>` | Custom modal divs | `<UModal v-model="open">...</UModal>` |
+| `<UTable>` | `<table>` | `<UTable :rows="data" :columns="cols" />` |
+| `<UBadge>` | `<span class="badge">` | `<UBadge color="green">Active</UBadge>` |
+| `<UAlert>` | Custom alert divs | `<UAlert title="Warning" color="yellow" />` |
+
+### Form Example
+
+```vue
+<template>
+  <UCard>
+    <UFormGroup label="Email" required>
+      <UInput v-model="form.email" type="email" placeholder="you@example.com" />
+    </UFormGroup>
+
+    <UFormGroup label="Password" required>
+      <UInput v-model="form.password" type="password" />
+    </UFormGroup>
+
+    <UButton type="submit" :loading="submitting">
+      Sign In
+    </UButton>
+  </UCard>
+</template>
+```
+
+### Button Variants
+
+```vue
+<UButton>Default</UButton>
+<UButton color="primary">Primary</UButton>
+<UButton color="red">Danger</UButton>
+<UButton variant="outline">Outline</UButton>
+<UButton variant="ghost">Ghost</UButton>
+<UButton variant="link">Link</UButton>
+<UButton size="xs">Extra Small</UButton>
+<UButton size="sm">Small</UButton>
+<UButton size="lg">Large</UButton>
+<UButton :loading="true">Loading...</UButton>
+<UButton disabled>Disabled</UButton>
+```
+
+### Icons
+
+Install Lucide icons:
+
+```bash
+npm install @iconify-json/lucide
+```
+
+Then use the `icon` prop:
+
+```vue
+<UButton icon="i-lucide-plus">Add Item</UButton>
+<UButton icon="i-lucide-trash" color="red" variant="ghost" />
+<UInput icon="i-lucide-search" placeholder="Search..." />
+```
+
+Browse available icons at: https://lucide.dev/icons
+
+### Why Nuxt UI?
+
+1. **Automatic theming** - Components respect light/dark mode without extra CSS
+2. **Consistent design** - Unified look across your application
+3. **Accessibility** - Built-in ARIA attributes and keyboard navigation
+4. **Tailwind integration** - Extend with Tailwind classes when needed
+
+For full component documentation, see: https://ui.nuxt.com/components
+
+---
+
+## Styling with Tailwind CSS
+
+**Use Tailwind CSS utilities** for all custom styling. Tailwind integrates with Nuxt UI's theming system, ensuring styles adapt to light/dark mode automatically.
+
+### Theme-Aware Colors
+
+Use Nuxt UI's semantic color classes that automatically adapt to the current theme:
+
+```vue
+<!-- These adapt to light/dark mode automatically -->
+<div class="bg-gray-100 dark:bg-gray-800">
+  <p class="text-gray-900 dark:text-gray-100">Themed text</p>
+</div>
+
+<!-- Or use Nuxt UI's built-in color tokens -->
+<div class="bg-primary-500">Primary background</div>
+<p class="text-primary">Primary text</p>
+```
+
+### Layout Examples
+
+```vue
+<!-- Flex layout -->
+<div class="flex items-center justify-between gap-4">
+  <span>Left</span>
+  <span>Right</span>
+</div>
+
+<!-- Grid layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <UCard>Item 1</UCard>
+  <UCard>Item 2</UCard>
+  <UCard>Item 3</UCard>
+</div>
+
+<!-- Centering content -->
+<div class="flex min-h-screen items-center justify-center">
+  <UCard class="w-full max-w-md">Centered card</UCard>
+</div>
+```
+
+### Spacing and Sizing
+
+```vue
+<!-- Padding and margin -->
+<div class="p-4 m-2">Padded and margined</div>
+<div class="px-6 py-4">Horizontal/vertical padding</div>
+<div class="space-y-4">Vertical spacing between children</div>
+
+<!-- Width and height -->
+<div class="w-full max-w-lg">Responsive width</div>
+<div class="h-64">Fixed height</div>
+<div class="min-h-screen">Minimum full screen height</div>
+```
+
+### Responsive Design
+
+```vue
+<!-- Mobile-first responsive classes -->
+<div class="text-sm md:text-base lg:text-lg">
+  Responsive text size
+</div>
+
+<div class="hidden md:block">
+  Only visible on medium screens and up
+</div>
+
+<div class="flex flex-col md:flex-row">
+  Stack on mobile, row on desktop
+</div>
+```
+
+### Combining with Nuxt UI Components
+
+```vue
+<UButton class="w-full md:w-auto">
+  Full width on mobile, auto on desktop
+</UButton>
+
+<UCard class="shadow-lg hover:shadow-xl transition-shadow">
+  Card with custom shadow
+</UCard>
+
+<UInput class="max-w-xs" placeholder="Constrained width input" />
+```
+
+### Default Styling Approach
+
+When building UI in this project:
+
+1. **Use Nuxt UI components first** - They handle theming automatically
+2. **Use Tailwind utilities for one-off styling** - Layout, spacing, responsive breakpoints
+3. **Create CSS classes for repeated patterns** - If you're writing the same Tailwind classes multiple times, extract to a CSS class
+4. **Use `dark:` prefix for theme-specific overrides** - When you need custom dark mode styles
+
+```vue
+<!-- ✅ Good: Nuxt UI + Tailwind for one-off styling -->
+<template>
+  <div class="flex flex-col gap-6 p-4 md:p-8">
+    <UCard>
+      <template #header>
+        <h2 class="text-lg font-semibold">Title</h2>
+      </template>
+      <p class="text-gray-600 dark:text-gray-400">Description</p>
+    </UCard>
+  </div>
+</template>
+
+<!-- ✅ Good: CSS class for repeated patterns -->
+<template>
+  <div class="page-section">...</div>
+  <div class="page-section">...</div>
+  <div class="page-section">...</div>
+</template>
+
+<style scoped>
+.page-section {
+  @apply flex flex-col gap-6 p-4 md:p-8 bg-gray-50 dark:bg-gray-900;
+}
+</style>
+
+<!-- ❌ Avoid: Repeating the same Tailwind classes -->
+<template>
+  <div class="flex flex-col gap-6 p-4 md:p-8 bg-gray-50 dark:bg-gray-900">...</div>
+  <div class="flex flex-col gap-6 p-4 md:p-8 bg-gray-50 dark:bg-gray-900">...</div>
+  <div class="flex flex-col gap-6 p-4 md:p-8 bg-gray-50 dark:bg-gray-900">...</div>
+</template>
+```
+
+---
+
 ## Middleware
 
 ### `auth`

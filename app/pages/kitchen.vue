@@ -261,6 +261,94 @@ const tableRows = [
       </div>
     </section>
 
+    <!-- Icons Section -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Icons (Lucide)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <UCard>
+          <template #header>
+            <h3>Icon Buttons</h3>
+          </template>
+          <div class="button-grid">
+            <UButton icon="i-lucide-plus">Add</UButton>
+            <UButton icon="i-lucide-pencil" color="secondary">Edit</UButton>
+            <UButton icon="i-lucide-trash" color="error">Delete</UButton>
+            <UButton icon="i-lucide-download" variant="outline">Download</UButton>
+            <UButton icon="i-lucide-settings" variant="ghost" />
+            <UButton icon="i-lucide-heart" variant="soft" color="error" />
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h3>Input with Icons</h3>
+          </template>
+          <div class="space-y-3">
+            <UInput icon="i-lucide-search" placeholder="Search..." />
+            <UInput icon="i-lucide-mail" placeholder="Email address" />
+            <UInput icon="i-lucide-lock" type="password" placeholder="Password" />
+            <UInput icon="i-lucide-user" placeholder="Username" />
+          </div>
+        </UCard>
+
+        <UCard class="md:col-span-2">
+          <template #header>
+            <h3>Common Icons</h3>
+          </template>
+          <div class="flex flex-wrap gap-4">
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-home" class="text-2xl" />
+              <span class="text-xs text-muted">home</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-user" class="text-2xl" />
+              <span class="text-xs text-muted">user</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-settings" class="text-2xl" />
+              <span class="text-xs text-muted">settings</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-bell" class="text-2xl" />
+              <span class="text-xs text-muted">bell</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-calendar" class="text-2xl" />
+              <span class="text-xs text-muted">calendar</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-folder" class="text-2xl" />
+              <span class="text-xs text-muted">folder</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-file" class="text-2xl" />
+              <span class="text-xs text-muted">file</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-image" class="text-2xl" />
+              <span class="text-xs text-muted">image</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-check" class="text-2xl" />
+              <span class="text-xs text-muted">check</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-x" class="text-2xl" />
+              <span class="text-xs text-muted">x</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-arrow-right" class="text-2xl" />
+              <span class="text-xs text-muted">arrow-right</span>
+            </div>
+            <div class="flex flex-col items-center gap-1">
+              <UIcon name="i-lucide-external-link" class="text-2xl" />
+              <span class="text-xs text-muted">external-link</span>
+            </div>
+          </div>
+        </UCard>
+      </div>
+    </section>
+
     <!-- Badges Section -->
     <section class="mb-12">
       <h2 class="text-2xl font-semibold mb-4 pb-2 border-b border-(--ui-border)">Badges & Tags</h2>
