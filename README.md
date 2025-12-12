@@ -13,11 +13,10 @@ A Nuxt 4.1.0 base layer providing authentication, theme management, email, stora
 
 ## Quick Start
 
-### 1. Create a New Nuxt Project
+### 1. Create a New Nuxt Project (run in the target folder)
 
 ```bash
-npx nuxi@latest init my-app
-cd my-app
+  npx nuxi@latest init . --template ui --packageManager npm --gitInit --force --no-modules
 ```
 
 ### 2. Extend This Layer
