@@ -52,9 +52,9 @@ export default defineNuxtConfig({
 })
 ```
 
-### 3. Configure Migrations
+### 3. Update package.json
 
-Update `package.json`:
+Add migration scripts and dependencies:
 
 ```json
 {
@@ -62,6 +62,15 @@ Update `package.json`:
     "migrate": "sh -c 'node node_modules/.c12/github_corsacca_nuxt_*/scripts/migrate.mjs'",
     "dev": "npm run migrate && nuxt dev",
     "build": "npm run migrate && nuxt build"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/s3-request-presigner": "^3.0.0",
+    "@iconify-json/lucide": "^1.2.79",
+    "bcrypt": "^5.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "nodemailer": "^6.0.0",
+    "postgres": "^3.0.0"
   }
 }
 ```
@@ -71,6 +80,7 @@ Update `package.json`:
 Create `.env` with:
 
 ```env
+# Required
 APP_TITLE=My App
 JWT_SECRET=your-secret-key
 DATABASE_URL=postgresql://user:pass@host:5432/db
@@ -92,12 +102,18 @@ S3_SECRET_ACCESS_KEY=your-secret
 S3_BUCKET_NAME=your-bucket
 ```
 
+**Important:**
+- `DATABASE_URL` must be a PostgreSQL connection string (not SQLite)
+- Do NOT wrap values in quotes — `DATABASE_URL=postgresql://...` not `DATABASE_URL="postgresql://..."`
+
 ### 5. Install and Run
 
 ```bash
 npm install
 npm run dev
 ```
+
+Migrations run automatically on `dev` and `build`.
 
 ## What's Included
 
