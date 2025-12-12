@@ -57,11 +57,7 @@ export default defineNuxtConfig({
 
 ### 2. Set Up Environment Variables
 
-Copy the layer's `.env.example` to your project and fill in values:
-
-```bash
-cp ../base/.env.example .env
-```
+Create a `.env` file in your project root with the required variables. See the [Environment Variables](#environment-variables) section below for the full list.
 
 ### 3. Configure Migrations
 

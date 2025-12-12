@@ -85,13 +85,7 @@ export default defineNuxtConfig({
 
 ## Environment Variables
 
-Copy `.env.example` to your project and rename it to `.env`, then fill in your values:
-
-```bash
-cp ../base/.env.example .env
-```
-
-Required environment variables:
+Create a `.env` file in your project root with the following required variables:
 - `JWT_SECRET` - Secret key for JWT token generation
 - `DATABASE_URL` - PostgreSQL connection string
 - `SMTP_*` - Email configuration (host, port, credentials)
