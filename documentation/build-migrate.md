@@ -18,19 +18,7 @@ Add or update these scripts to run migrations before build/dev:
 ```json
 {
   "scripts": {
-    "migrate": "node node_modules/@corsacca/nuxt-base-layer/scripts/migrate.mjs",
-    "dev": "npm run migrate && nuxt dev",
-    "build": "npm run migrate && nuxt build"
-  }
-}
-```
-
-If using the layer via local path (e.g., `extends: ['../base']`):
-
-```json
-{
-  "scripts": {
-    "migrate": "node ../base/scripts/migrate.mjs",
+    "migrate": "sh -c 'node node_modules/.c12/github_corsacca_nuxt_*/scripts/migrate.mjs'",
     "dev": "npm run migrate && nuxt dev",
     "build": "npm run migrate && nuxt build"
   }

@@ -1,43 +1,35 @@
 # Nuxt Base Layer
 
-A comprehensive Nuxt 4.1.0 base layer providing authentication, theme management, and common utilities for rapid application development.
+A Nuxt 4.1.0 base layer providing authentication, theme management, email, storage, and database utilities.
 
 ## Features
 
-- **Authentication System**: JWT-based authentication with bcrypt password hashing
-- **Theme System**: Light/dark mode with localStorage persistence and system preference detection
-- **Email Integration**: Nodemailer with SMTP configuration
-- **S3 Storage**: AWS SDK integration with presigned URL support
-- **Database Utilities**: PostgreSQL connection and query utilities
-- **@nuxt/ui**: Pre-configured with neutral color scheme
-- **TypeScript**: Full TypeScript support with Nuxt's auto-configuration
+- **Authentication** - JWT-based auth with email verification and password reset
+- **Theme System** - Light/dark mode with persistence
+- **Email** - SMTP templated emails
+- **S3 Storage** - File uploads with presigned URLs
+- **Database** - PostgreSQL utilities
+- **@nuxt/ui** - Pre-configured UI components
 
 ## Quick Start
 
-### 1. Using as a Local Layer
-
-Create a new Nuxt project and extend this layer:
+### 1. Create a New Nuxt Project
 
 ```bash
 npx nuxi@latest init my-app
 cd my-app
 ```
 
-Update your `nuxt.config.ts`:
+### 2. Extend This Layer
+
+Update `nuxt.config.ts`:
 
 ```typescript
 export default defineNuxtConfig({
-  extends: [
-    '../base'  // Relative path to this layer
-  ],
+  extends: ['github:corsacca/nuxt-base#master'],  // Or use a tag like #v1.2.0
 
-  // Add your deployment configuration
-  nitro: {
-    preset: 'vercel'  // or 'node-server', 'cloudflare', etc.
-  },
-
-  // Provide runtime configuration
   runtimeConfig: {
+    appName: process.env.APP_TITLE,
     jwtSecret: process.env.JWT_SECRET,
     databaseUrl: process.env.DATABASE_URL,
     smtpHost: process.env.SMTP_HOST,
@@ -52,8 +44,8 @@ export default defineNuxtConfig({
     s3AccessKeyId: process.env.S3_ACCESS_KEY_ID,
     s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
     s3BucketName: process.env.S3_BUCKET_NAME,
-
     public: {
+      appName: process.env.APP_TITLE,
       nodeEnv: process.env.NODE_ENV || 'development',
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
     }
@@ -61,139 +53,82 @@ export default defineNuxtConfig({
 })
 ```
 
-### 2. Using from Git Repository
+### 3. Configure Migrations
 
-```typescript
-export default defineNuxtConfig({
-  extends: [
-    'github:yourorg/nuxt-base-layer#v1.0.0'
-  ]
-})
+Update `package.json`:
+
+```json
+{
+  "scripts": {
+    "migrate": "sh -c 'node node_modules/.c12/github_corsacca_nuxt_*/scripts/migrate.mjs'",
+    "dev": "npm run migrate && nuxt dev",
+    "build": "npm run migrate && nuxt build"
+  }
+}
 ```
 
-### 3. Using as NPM Package (if published)
+### 4. Set Up Environment Variables
 
-```bash
-npm install @yourorg/nuxt-base-layer
+Create `.env` with:
+
+```env
+APP_TITLE=My App
+JWT_SECRET=your-secret-key
+DATABASE_URL=postgresql://user:pass@host:5432/db
+NUXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Email (optional)
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_USER=username
+SMTP_PASS=password
+SMTP_SECURE=true
+SMTP_FROM=noreply@example.com
+
+# S3 Storage (optional)
+S3_ENDPOINT=https://s3.example.com
+S3_REGION=us-east-1
+S3_ACCESS_KEY_ID=your-key
+S3_SECRET_ACCESS_KEY=your-secret
+S3_BUCKET_NAME=your-bucket
 ```
 
-```typescript
-export default defineNuxtConfig({
-  extends: ['@yourorg/nuxt-base-layer']
-})
-```
-
-## Environment Variables
-
-Create a `.env` file in your project root with the following required variables:
-- `JWT_SECRET` - Secret key for JWT token generation
-- `DATABASE_URL` - PostgreSQL connection string
-- `SMTP_*` - Email configuration (host, port, credentials)
-- `S3_*` - S3 storage configuration (endpoint, region, credentials)
-- `NUXT_PUBLIC_SITE_URL` - Your application URL
-
-## What's Included
-
-### Composables (Auto-imported)
-
-- **`useAuth()`**: Authentication utilities
-  - `login(email, password)`
-  - `register(email, password, name)`
-  - `logout()`
-  - `resetPassword(email)`
-  - `getUser()`
-
-- **`useTheme()`**: Theme management
-  - `initTheme()` - Initialize theme from localStorage/system preference
-  - `toggleTheme()` - Toggle between light/dark mode
-  - `theme` - Current theme reactive ref
-
-### Middleware
-
-- **`auth.ts`**: Protect routes requiring authentication
-
-### Server Utilities
-
-Located in `server/utils/`:
-- **JWT**: Token generation and verification
-- **Password**: Bcrypt hashing and verification
-- **Email**: SMTP email sending with templates
-- **S3**: File upload/download with presigned URLs
-- **Database**: PostgreSQL connection and query utilities
-
-### API Routes
-
-Located in `server/api/`:
-- Authentication endpoints (login, register, logout, password reset)
-- User profile management
-- File upload/download
-
-### Pages (Override in Your Project)
-
-- `/` - Landing page
-- `/login` - Login page
-- `/register` - Registration page
-- `/dashboard` - Protected dashboard
-- `/profile` - User profile management
-- `/reset-password` - Password reset flow
-- `/kitchen` - UI component showcase
-
-### Styling
-
-- **Global CSS**: Black/white theme system with CSS custom properties
-- **@nuxt/ui**: Pre-configured with neutral colors
-- **Tailwind CSS**: Full Tailwind support with custom configuration
-- **Dark Mode**: Automatic system preference detection
-
-## Development
-
-This layer can be developed independently:
+### 5. Install and Run
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Overriding Layer Defaults
+## What's Included
 
-### Override Pages
+| Category | Included |
+|----------|----------|
+| **Composables** | `useAuth()`, `useTheme()` |
+| **Middleware** | `auth` (route protection) |
+| **Pages** | `/`, `/login`, `/register`, `/dashboard`, `/profile`, `/reset-password` |
+| **Server Utils** | JWT, password hashing, email, S3, database |
+| **API Routes** | Auth endpoints, profile management |
 
-Create pages in your project's `app/pages/` directory with the same name to override layer pages.
+## Overriding Defaults
 
-### Override Components
+Create files with the same name in your project to override:
 
-Components in your project take precedence over layer components with the same name.
-
-### Override Styles
-
-Layer styles can be overridden by:
-1. Adding your own CSS in your project's `nuxt.config.ts`
-2. Using Tailwind utility classes
-3. Overriding CSS custom properties
-
-### Override Configuration
-
-All `nuxt.config.ts` settings can be overridden in your consuming project. Settings are merged with your project's configuration taking precedence.
-
-## Layer Priority
-
-When using multiple layers:
-1. Your project files (highest priority)
-2. Layers in `~/layers` (alphabetically)
-3. Layers in `extends` array (first = highest priority)
-
-## Best Practices
-
-1. **Environment Variables**: Always provide runtime config through environment variables in consuming projects
-2. **Database Migrations**: Run migrations in your consuming project, not in the layer
-3. **Customization**: Override pages and components rather than modifying the layer directly
-4. **Deployment**: Configure deployment settings (`nitro.preset`) in your consuming project
-5. **Dependencies**: The layer's dependencies are automatically available to consuming projects
+- **Pages**: `app/pages/dashboard.vue` overrides the layer's dashboard
+- **Components**: Your components take precedence over layer components
+- **Layouts**: `app/layouts/default.vue` overrides the layer's layout
 
 ## Documentation
 
-Comprehensive Nuxt 4.1 documentation is available in the `documentation/` folder.
+Copy `BASE_LAYER.md` to your project root for easy reference:
 
-## License
+```bash
+cp node_modules/.c12/github_corsacca_nuxt_*/BASE_LAYER.md .
+```
 
-[Your License Here]
+This file contains the complete API reference for AI tools and developers, including:
+- Composable APIs and usage examples
+- Server utility functions
+- Database schema
+- Email templates
+- Migration system details

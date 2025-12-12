@@ -1,95 +1,8 @@
-# Nuxt Base Layer Documentation
+# Nuxt Base Layer - API Reference
 
-This document describes the Nuxt Base Layer that this project extends. Use this reference to understand what functionality is already provided and how to integrate with it.
+This is the technical reference for the Nuxt Base Layer. Use this document when coding to understand available composables, utilities, API endpoints, database schema, and patterns.
 
----
-
-## Quick Start
-
-### 1. Configure Your Project
-
-Edit `nuxt.config.ts`:
-
-```typescript
-export default defineNuxtConfig({
-  extends: ['github:corsacca/nuxt-base#master'],  // Or use a specific tag like #v1.2.0
-
-  // Override SSR if needed (layer defaults to false)
-  ssr: true,
-
-  // App head configuration
-  app: {
-    head: {
-      title: process.env.APP_TITLE || 'My App',
-      link: [
-        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
-        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }
-      ]
-    }
-  },
-
-  // Runtime configuration
-  runtimeConfig: {
-    appName: process.env.APP_TITLE,
-    jwtSecret: process.env.JWT_SECRET,
-    databaseUrl: process.env.DATABASE_URL,
-    smtpHost: process.env.SMTP_HOST,
-    smtpPort: process.env.SMTP_PORT,
-    smtpUser: process.env.SMTP_USER,
-    smtpPass: process.env.SMTP_PASS,
-    smtpSecure: process.env.SMTP_SECURE,
-    smtpFrom: process.env.SMTP_FROM,
-    smtpRejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED,
-    s3Endpoint: process.env.S3_ENDPOINT,
-    s3Region: process.env.S3_REGION,
-    s3AccessKeyId: process.env.S3_ACCESS_KEY_ID,
-    s3SecretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
-    s3BucketName: process.env.S3_BUCKET_NAME,
-    public: {
-      appName: process.env.APP_TITLE,
-      nodeEnv: process.env.NODE_ENV || 'development',
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-    }
-  }
-})
-```
-
-### 2. Set Up Environment Variables
-
-Create a `.env` file in your project root with the required variables. See the [Environment Variables](#environment-variables) section below for the full list.
-
-### 3. Configure Migrations
-
-Update `package.json`:
-
-```json
-{
-  "scripts": {
-    "migrate": "node ../base/scripts/migrate.mjs",
-    "dev": "npm run migrate && nuxt dev",
-    "build": "npm run migrate && nuxt build"
-  }
-}
-```
-
-### 4. Install and Run
-
-```bash
-npm install
-npm run dev
-```
-
-Your app now has authentication, theme system, email, and all server utilities.
-
-### Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| Layer not found | Check path in `extends` array |
-| Env vars not working | Ensure `.env` is in your project root |
-| Components not importing | Restart dev server |
-| TypeScript errors | Run `npm run postinstall` |
+For setup instructions, see [README.md](./README.md).
 
 ---
 
@@ -754,7 +667,7 @@ The base layer uses build-time migrations that run during `npm run build` and `n
 ```json
 {
   "scripts": {
-    "migrate": "node ../base/scripts/migrate.mjs",
+    "migrate": "sh -c 'node node_modules/.c12/github_corsacca_nuxt_*/scripts/migrate.mjs'",
     "dev": "npm run migrate && nuxt dev",
     "build": "npm run migrate && nuxt build"
   }
