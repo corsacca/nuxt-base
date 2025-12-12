@@ -246,4 +246,3 @@ const redirectToLogin = () => {
     </p>
   </div>
 </template>
-

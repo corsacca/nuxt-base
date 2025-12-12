@@ -187,4 +187,3 @@ async function handleResetPassword() {
     </p>
   </div>
 </template>
-

@@ -7,6 +7,6 @@ definePageMeta({
 <template>
   <div>
     <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
-    <p class="text-(--ui-text-muted)">Welcome to your dashboard. This content can be customized by consuming applications.</p>
+    <p class="text-(--ui-text-muted)">Welcome to your dashboard. Customize this page for your application.</p>
   </div>
 </template>
