@@ -48,15 +48,31 @@ export default defineNuxtConfig({
     jwtSecret: process.env.JWT_SECRET || '',
     databaseUrl: process.env.DATABASE_URL || '',
 
-    // SMTP configuration
+    // Email provider configuration
+    // Provider: 'smtp' (default), 'mailgun', or 'ses'
+    emailProvider: process.env.EMAIL_PROVIDER || 'smtp',
+
+    // Mailgun configuration (when EMAIL_PROVIDER=mailgun)
+    mailgunApiKey: process.env.MAILGUN_API_KEY || '',
+    mailgunDomain: process.env.MAILGUN_DOMAIN || '',
+    mailgunHost: process.env.MAILGUN_HOST || '', // 'api.eu.mailgun.net' for EU region
+
+    // AWS SES configuration (when EMAIL_PROVIDER=ses)
+    awsRegion: process.env.AWS_REGION || process.env.AWS_SES_REGION || '',
+    awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+    awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+
+    // SMTP configuration (when EMAIL_PROVIDER=smtp)
     smtpHost: process.env.SMTP_HOST || '',
     smtpPort: process.env.SMTP_PORT || '',
     smtpUser: process.env.SMTP_USER || '',
     smtpPass: process.env.SMTP_PASS || '',
     smtpSecure: process.env.SMTP_SECURE || '',
+    smtpRejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED || '',
+
+    // Common email settings (used by all providers)
     smtpFrom: process.env.SMTP_FROM || '',
     smtpFromName: process.env.SMTP_FROM_NAME || '',
-    smtpRejectUnauthorized: process.env.SMTP_REJECT_UNAUTHORIZED || '',
 
     // S3 Storage configuration
     s3Endpoint: process.env.S3_ENDPOINT || '',
