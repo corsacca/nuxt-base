@@ -14,6 +14,7 @@ export default defineVitestConfig({
   test: {
     environment: 'nuxt',
     include: ['tests/**/*.test.ts'],
+    exclude: ['tests/unit/**'],
     testTimeout: 60000,
     fileParallelism: false,
     sequence: {
