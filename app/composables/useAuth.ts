@@ -118,6 +118,29 @@ export const useAuth = () => {
 
   const isLoggedIn = computed(() => !!user.value)
 
+  const deleteAccount = async (password: string) => {
+    try {
+      const response = await $fetch('/api/profile/account', {
+        method: 'DELETE',
+        body: { password }
+      }) as { success: boolean; message?: string }
+
+      if (response.success) {
+        user.value = null
+        clearCache()
+        await navigateTo('/login')
+        return { success: true }
+      }
+
+      return { success: false, message: 'Account deletion failed' }
+    } catch (error: any) {
+      return {
+        success: false,
+        message: error.data?.statusMessage || 'An error occurred while deleting your account'
+      }
+    }
+  }
+
   return {
     user: readonly(user),
     authReady: readonly(authReady),
@@ -127,6 +150,7 @@ export const useAuth = () => {
     checkAuth,
     restoreFromCache,
     isLoggedIn,
+    deleteAccount,
     setAuthReady: (value: boolean) => { authReady.value = value }
   }
 } 

@@ -205,7 +205,9 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
     return true
   } catch (error) {
-    console.error('[Email] Error sending:', error)
+    if (!process.env.VITEST) {
+      console.error('[Email] Error sending:', error)
+    }
     return false
   }
 }
@@ -246,7 +248,9 @@ export async function sendTemplateEmail(options: TemplateEmailOptions): Promise<
       from: options.from
     })
   } catch (error) {
-    console.error('[Email] Error sending template email:', error)
+    if (!process.env.VITEST) {
+      console.error('[Email] Error sending template email:', error)
+    }
     return false
   }
 }
