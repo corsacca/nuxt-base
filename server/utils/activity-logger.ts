@@ -31,7 +31,7 @@ export async function logEvent(options: LogEventOptions): Promise<void> {
         ${options.recordId || null},
         ${options.userId || null},
         ${options.userAgent || null},
-        ${JSON.stringify(options.metadata || {})}::jsonb
+        ${options.metadata || {}}
       )
     `
   } catch (error) {
