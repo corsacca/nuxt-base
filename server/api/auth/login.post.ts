@@ -3,7 +3,8 @@ import jwt from 'jsonwebtoken'
 import { sql } from '../../utils/database'
 import { logLoginFailed, logLogin } from '../../utils/activity-logger'
 import { checkRateLimit, logRateLimitExceeded } from '../../utils/rate-limit'
-import { useRuntimeConfig, readBody, createError, getHeader, setResponseHeader, setCookie } from '#imports'
+import { readBody, getHeader, setResponseHeader, setCookie } from 'h3'
+import { useRuntimeConfig, createError } from '#imports'
 
 export default defineEventHandler(async (event) => {
   const { email, password } = await readBody(event)

@@ -3,7 +3,8 @@ import { sql } from '../../utils/database'
 import { logPasswordResetRequest } from '../../utils/activity-logger'
 import { sendTemplateEmail } from '../../utils/email'
 import { checkRateLimit, logRateLimitExceeded } from '../../utils/rate-limit'
-import { useRuntimeConfig, readBody, createError, getHeader } from '#imports'
+import { readBody, getHeader } from 'h3'
+import { useRuntimeConfig, createError } from '#imports'
 
 export default defineEventHandler(async (event) => {
   const { email } = await readBody(event)

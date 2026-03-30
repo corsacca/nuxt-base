@@ -3,7 +3,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
-const { user, logout } = useAuth()
+const { user, logout, deleteAccount } = useAuth()
 const route = useRoute()
 
 // Check for email change status in query params
@@ -60,6 +60,14 @@ const passwordState = reactive({
 const passwordLoading = ref(false)
 const passwordError = ref('')
 const passwordSuccess = ref('')
+
+// State for account deletion
+const deleteState = reactive({
+  password: '',
+  confirmDelete: false
+})
+const deleteLoading = ref(false)
+const deleteError = ref('')
 
 // Watch user changes to update name field
 watch(user, (newUser) => {
@@ -195,6 +203,34 @@ async function handlePasswordChange() {
     passwordLoading.value = false
   }
 }
+
+// Handle account deletion
+async function handleDeleteAccount() {
+  deleteError.value = ''
+
+  if (!deleteState.password || !deleteState.confirmDelete) {
+    return
+  }
+
+  deleteLoading.value = true
+
+  try {
+    const result = await deleteAccount(deleteState.password)
+
+    if (!result.success) {
+      deleteError.value = result.message || 'Failed to delete account'
+    }
+  } catch (err: any) {
+    deleteError.value = err.data?.statusMessage || 'Failed to delete account'
+  } finally {
+    deleteLoading.value = false
+  }
+}
+
+// Reset delete confirmation when password changes
+watch(() => deleteState.password, () => {
+  deleteState.confirmDelete = false
+})
 </script>
 
 <template>
@@ -380,6 +416,47 @@ async function handlePasswordChange() {
         </p>
         <UButton color="error" variant="outline" size="lg" @click="logout">
           Sign Out
+        </UButton>
+      </div>
+    </UCard>
+
+    <!-- Delete Account -->
+    <UCard>
+      <template #header>
+        <h2 class="text-xl font-semibold text-red-600">Delete Account</h2>
+      </template>
+      <div class="space-y-4">
+        <UAlert
+          color="warning"
+          title="Warning: This action is permanent"
+          description="Deleting your account will permanently remove all your data. This action cannot be undone."
+        />
+        <UFormField label="Enter your password to confirm">
+          <UInput
+            v-model="deleteState.password"
+            type="password"
+            size="lg"
+            :disabled="deleteLoading"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+          />
+        </UFormField>
+        <div class="flex items-center gap-2">
+          <UCheckbox
+            v-model="deleteState.confirmDelete"
+            :disabled="!deleteState.password || deleteLoading"
+          />
+          <span class="text-sm">I understand this action is permanent and cannot be undone</span>
+        </div>
+        <UAlert v-if="deleteError" color="error" :title="deleteError" />
+        <UButton
+          color="error"
+          size="lg"
+          :loading="deleteLoading"
+          :disabled="!deleteState.password || !deleteState.confirmDelete || deleteLoading"
+          @click="handleDeleteAccount"
+        >
+          Delete My Account
         </UButton>
       </div>
     </UCard>

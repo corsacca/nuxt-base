@@ -4,7 +4,8 @@ import { sql } from '../../utils/database'
 import { logRegisterAttempt } from '../../utils/activity-logger'
 import { sendTemplateEmail } from '../../utils/email'
 import { checkRateLimit, logRateLimitExceeded } from '../../utils/rate-limit'
-import { readBody, createError, getHeader, setResponseHeader, getRequestURL } from '#imports'
+import { readBody, getHeader, setResponseHeader, getRequestURL } from 'h3'
+import { createError } from '#imports'
 
 export default defineEventHandler(async (event) => {
   const { email, password, display_name } = await readBody(event)

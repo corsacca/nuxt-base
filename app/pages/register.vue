@@ -195,7 +195,7 @@ const redirectToLogin = () => {
                 :disabled="loading"
                 autocomplete="new-password"
                 :ui="{ base: 'px-3 py-2' }"
-                :color="!passwordMatch ? 'red' : undefined"
+                :color="!passwordMatch ? 'error' : undefined"
                 class="w-full"
               />
               <p v-if="!passwordMatch" class="text-xs text-red-600 mt-1">
